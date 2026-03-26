@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements  UserService{
@@ -30,7 +32,7 @@ public class UserServiceImpl implements  UserService{
                     .build();
         }
 
-        TipoUsuario tipo = toTipoUsuarioEnum(String.valueOf(request.getTipoUsuario()));
+        TipoUsuario tipo = toTipoUsuarioEnum(TipoUsuario.valueOf(String.valueOf(request.getTipoUsuario())));
         if (tipo == null) {
             return UserResponseDTO.builder()
                     .mensagem("Tipo de Usuário Inválido")
@@ -38,9 +40,9 @@ public class UserServiceImpl implements  UserService{
         }
 
         User newUser = User.builder()
-                .name(request.getName())
+                .nome(request.getNome())
                 .email(request.getEmail())
-                .senhaHash(passwordEncoder.encode(request.getSenha()))
+                .senha(passwordEncoder.encode(request.getSenha()))
                 .curso(request.getCurso())
                 .tipoUsuario(tipo)
                 .termoAceito(true)
@@ -53,7 +55,7 @@ public class UserServiceImpl implements  UserService{
 
         return UserResponseDTO.builder()
                 .idUsuario(salvo.getIdUsuario())
-                .nome(salvo.getName())
+                .nome(salvo.getNome())
                 .email(salvo.getEmail())
                 .curso(salvo.getCurso())
                 .tipoUsuario(TipoUsuario.valueOf(salvo.getTipoUsuario().name()))
@@ -66,7 +68,7 @@ public class UserServiceImpl implements  UserService{
 
     }
 
-    private TipoUsuario toTipoUsuarioEnum(String tipo) {
+    private TipoUsuario toTipoUsuarioEnum(TipoUsuario tipo) {
         try {
             return TipoUsuario.valueOf(tipo.toUpperCase());
         } catch (IllegalArgumentException e) {
@@ -75,13 +77,13 @@ public class UserServiceImpl implements  UserService{
     }
 
     @Override
-    public UserResponseDTO getUserProfile(Long userId) {
+    public UserResponseDTO getUserProfile(UUID userId) {
         // Implementar depois
         return null;
     }
 
     @Override
-    public UserResponseDTO updateStreak(Long userId, Integer novosPontos) {
+    public UserResponseDTO updateStreak(UUID userId, Integer novosPontos) {
         // Implementar depois (gamificação)
         return null;
     }

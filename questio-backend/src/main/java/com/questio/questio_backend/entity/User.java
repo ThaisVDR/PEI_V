@@ -5,9 +5,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
-@Table(name = "users")
+@Table(name = "usuarios")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,40 +18,44 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idUsuario;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID idUsuario;
 
     @Column(nullable = false, length = 100)
-    private String name;
+    private String nome;
 
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
-    @Column(nullable = false,length = 255)
-    private String senhaHash;
+    @Column(name = "senha", nullable = false,length = 255)
+    private String senha;
 
     @Column(nullable = false, length = 255)
     private String curso;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 40)
+    @Column(name = "tipo", nullable = false, length = 40)
     private TipoUsuario tipoUsuario;
 
-    @Column(nullable = false)
+    @Column(name = "termo_aceito", nullable = false)
     private Boolean termoAceito = false;
 
-    @Column(nullable = false)
+    @Builder.Default
+    @Column(name = "xp_total", nullable = false)
     private Integer xpTotal = 0;
 
+    @Builder.Default
     @Column(nullable = false)
     private Integer nivel = 1;
 
-    @Column(nullable = false)
+    @Builder.Default
+    @Column(name = "sequencia_dias", nullable = false)
     private Integer streakAtual = 0;
 
     private LocalDateTime ultimoLogin;
 
-    @Column(nullable = false)
+    @Builder.Default
+    @Column(name = "criado_em", updatable = false, nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(nullable = false)

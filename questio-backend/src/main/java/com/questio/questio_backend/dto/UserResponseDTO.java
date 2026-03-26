@@ -3,6 +3,8 @@ package com.questio.questio_backend.dto;
 import com.questio.questio_backend.entity.enums.TipoUsuario;
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -10,7 +12,7 @@ import lombok.*;
 @Builder
 public class UserResponseDTO {
 
-    private Long idUsuario;
+    private UUID idUsuario;
     private String nome;
     private String email;
     private String curso;

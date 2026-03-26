@@ -17,7 +17,7 @@ public class UserRegisterRequestDTO {
 
     @NotBlank
     @Size(min = 3, max = 100)
-    private String name;
+    private String nome;
 
     @NotBlank
     @Email
