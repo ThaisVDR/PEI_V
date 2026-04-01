@@ -1,11 +1,15 @@
 package com.questio.questio_backend.service;
 
+import com.questio.questio_backend.dto.LoginRequestDTO;
+import com.questio.questio_backend.dto.LoginResponseDTO;
 import com.questio.questio_backend.dto.UserRegisterRequestDTO;
 import com.questio.questio_backend.dto.UserResponseDTO;
 import com.questio.questio_backend.entity.User;
 import com.questio.questio_backend.entity.enums.TipoUsuario;
 import com.questio.questio_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +20,8 @@ import java.util.UUID;
 public class UserServiceImpl implements  UserService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
 
     @Override
     public UserResponseDTO registerNewUser(UserRegisterRequestDTO request) {
@@ -32,7 +38,7 @@ public class UserServiceImpl implements  UserService{
                     .build();
         }
 
-        TipoUsuario tipo = toTipoUsuarioEnum(TipoUsuario.valueOf(String.valueOf(request.getTipoUsuario())));
+        TipoUsuario tipo = request.getTipoUsuario();
         if (tipo == null) {
             return UserResponseDTO.builder()
                     .mensagem("Tipo de Usuário Inválido")
@@ -44,21 +50,20 @@ public class UserServiceImpl implements  UserService{
                 .email(request.getEmail())
                 .senha(passwordEncoder.encode(request.getSenha()))
                 .curso(request.getCurso())
-                .tipoUsuario(tipo)
+                .tipoUsuario(tipo.getValor())
                 .termoAceito(true)
                 .xpTotal(0)
                 .nivel(1)
                 .streakAtual(0)
-                .active(true)
                 .build();
         User salvo=userRepository.save(newUser);
-
+        TipoUsuario tipoDeRetorno = TipoUsuario.fromString(salvo.getTipoUsuario());
         return UserResponseDTO.builder()
                 .idUsuario(salvo.getIdUsuario())
                 .nome(salvo.getNome())
                 .email(salvo.getEmail())
                 .curso(salvo.getCurso())
-                .tipoUsuario(TipoUsuario.valueOf(salvo.getTipoUsuario().name()))
+                .tipoUsuario(tipoDeRetorno)
                 .termoAceito(salvo.getTermoAceito())
                 .xpTotal(salvo.getXpTotal())
                 .nivel(salvo.getNivel())
@@ -68,12 +73,13 @@ public class UserServiceImpl implements  UserService{
 
     }
 
-    private TipoUsuario toTipoUsuarioEnum(TipoUsuario tipo) {
-        try {
-            return TipoUsuario.valueOf(tipo.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+    public LoginResponseDTO login(LoginRequestDTO data) {
+        var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
+        var auth = this.authenticationManager.authenticate(usernamePassword);
+
+        var token = tokenService.generateToken((User) auth.getPrincipal());
+
+        return new LoginResponseDTO(token, "Login bem-sucedido!");
     }
 
     @Override
