@@ -4,6 +4,7 @@ package com.questio.questio_backend.dto;
 import com.questio.questio_backend.entity.enums.TipoUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -30,7 +31,7 @@ public class UserRegisterRequestDTO {
     @Size(max = 100)
     private String curso;
 
-    @NotBlank
+    @NotNull(message = "O tipo de usuário é obrigatório")
     private TipoUsuario tipoUsuario;
 
     private Boolean termoAceito;

@@ -1,6 +1,7 @@
 package com.questio.questio_backend.controller;
 
 
+import com.questio.questio_backend.dto.LoginRequestDTO;
 import com.questio.questio_backend.dto.UserRegisterRequestDTO;
 import com.questio.questio_backend.dto.UserResponseDTO;
 import com.questio.questio_backend.service.UserService;
@@ -29,5 +30,10 @@ public class AuthController {
         } else {
             return ResponseEntity.badRequest().body(response);
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Object> login(@RequestBody @Valid LoginRequestDTO data) {
+        return ResponseEntity.ok(userService.login(data));
     }
 }

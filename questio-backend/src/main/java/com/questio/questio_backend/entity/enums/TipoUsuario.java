@@ -1,5 +1,8 @@
 package com.questio.questio_backend.entity.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum TipoUsuario {
     ALUNO("Aluno"),
     PROFESSOR("Professor"),
@@ -10,12 +13,19 @@ public enum TipoUsuario {
     TipoUsuario(String valor) {
         this.valor = valor;
     }
-
-    public String getValor() {
+    
+    @JsonValue
+    public String getValor(){
         return valor;
     }
 
-    public String toUpperCase() {
-        return valor;
+    @JsonCreator
+    public static TipoUsuario fromString(String value) {
+        for (TipoUsuario tipo : TipoUsuario.values()) {
+            if (tipo.name().equalsIgnoreCase(value) || tipo.valor.equalsIgnoreCase(value)) {
+                return tipo;
+            }
+        }
+        return null;
     }
 }
