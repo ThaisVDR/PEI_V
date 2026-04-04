@@ -1,5 +1,5 @@
 package com.questio.questio_backend.dto;
 
-public class RankingDTO {
-    
+public record RankingDTO(String nome, Integer xpTotal, Integer nivel, Integer i) {
+
 }
