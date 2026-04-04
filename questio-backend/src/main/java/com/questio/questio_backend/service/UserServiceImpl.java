@@ -1,96 +1,70 @@
 package com.questio.questio_backend.service;
 
-import com.questio.questio_backend.dto.LoginRequestDTO;
-import com.questio.questio_backend.dto.LoginResponseDTO;
-import com.questio.questio_backend.dto.UserRegisterRequestDTO;
+import com.questio.questio_backend.dto.RankingDTO;
+import com.questio.questio_backend.dto.UserRankingResponseDTO;
 import com.questio.questio_backend.dto.UserResponseDTO;
 import com.questio.questio_backend.entity.User;
 import com.questio.questio_backend.entity.enums.TipoUsuario;
 import com.questio.questio_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements  UserService{
+public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final TokenService tokenService;
 
     @Override
-    public UserResponseDTO registerNewUser(UserRegisterRequestDTO request) {
+    public UserResponseDTO getAuthenticatedUserProfile() {
+        User user = getLoggedUser();
+        return mapToResponseDTO(user, "Perfil carregado.");
+    }
 
-        if (userRepository.existsByEmail(request.getEmail())) {
-            return UserResponseDTO.builder()
-                    .mensagem("E-mail já cadastrado!!")
-                    .build();
+    @Override
+    public UserRankingResponseDTO getUserRankingStatus() {
+        User currentUser = getLoggedUser();
+
+        List<User> topUsers = userRepository.findTop10ByOrderByXpTotalDesc();
+        List<RankingDTO> top10Dtos = new ArrayList<>();
+
+        for (int i = 0; i < topUsers.size(); i++) {
+            User u = topUsers.get(i);
+            top10Dtos.add(new RankingDTO(u.getNome(), u.getXpTotal(), u.getNivel(), i + 1));
         }
 
-        if (Boolean.FALSE.equals(request.getTermoAceito())) {
-            return UserResponseDTO.builder()
-                    .mensagem("É necessario aceitar os termos")
-                    .build();
-        }
+        Integer posicaoAtual = userRepository.countUsersWithMoreXp(currentUser.getXpTotal()) + 1;
 
-        TipoUsuario tipo = request.getTipoUsuario();
-        if (tipo == null) {
-            return UserResponseDTO.builder()
-                    .mensagem("Tipo de Usuário Inválido")
-                    .build();
-        }
+        RankingDTO userStatus = new RankingDTO(
+                currentUser.getNome(),
+                currentUser.getXpTotal(),
+                currentUser.getNivel(),
+                posicaoAtual
+        );
 
-        User newUser = User.builder()
-                .nome(request.getNome())
-                .email(request.getEmail())
-                .senha(passwordEncoder.encode(request.getSenha()))
-                .curso(request.getCurso())
-                .tipoUsuario(tipo.getValor())
-                .termoAceito(true)
-                .xpTotal(0)
-                .nivel(1)
-                .streakAtual(0)
-                .build();
-        User salvo=userRepository.save(newUser);
-        TipoUsuario tipoDeRetorno = TipoUsuario.fromString(salvo.getTipoUsuario());
+        return new UserRankingResponseDTO(top10Dtos, userStatus);
+    }
+
+    // Helper method para pegar o usuário do Spring Security (DRY - Don't Repeat Yourself)
+    private User getLoggedUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    // Helper para converter Entity -> DTO (Mantendo a lógica dos Enums que criamos)
+    private UserResponseDTO mapToResponseDTO(User user, String msg) {
         return UserResponseDTO.builder()
-                .idUsuario(salvo.getIdUsuario())
-                .nome(salvo.getNome())
-                .email(salvo.getEmail())
-                .curso(salvo.getCurso())
-                .tipoUsuario(tipoDeRetorno)
-                .termoAceito(salvo.getTermoAceito())
-                .xpTotal(salvo.getXpTotal())
-                .nivel(salvo.getNivel())
-                .streakAtual(salvo.getStreakAtual())
-                .mensagem("Usuário criado com sucesso!")
+                .idUsuario(user.getIdUsuario())
+                .nome(user.getNome())
+                .email(user.getEmail())
+                .tipoUsuario(TipoUsuario.fromString(user.getTipoUsuario()))
+                .xpTotal(user.getXpTotal())
+                .nivel(user.getNivel())
+                .streakAtual(user.getStreakAtual())
+                .mensagem(msg)
                 .build();
-
-    }
-
-    public LoginResponseDTO login(LoginRequestDTO data) {
-        var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
-        var auth = this.authenticationManager.authenticate(usernamePassword);
-
-        var token = tokenService.generateToken((User) auth.getPrincipal());
-
-        return new LoginResponseDTO(token, "Login bem-sucedido!");
-    }
-
-    @Override
-    public UserResponseDTO getUserProfile(UUID userId) {
-        // Implementar depois
-        return null;
-    }
-
-    @Override
-    public UserResponseDTO updateStreak(UUID userId, Integer novosPontos) {
-        // Implementar depois (gamificação)
-        return null;
     }
 }

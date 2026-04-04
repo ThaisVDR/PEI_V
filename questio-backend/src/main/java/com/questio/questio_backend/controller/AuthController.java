@@ -4,7 +4,7 @@ package com.questio.questio_backend.controller;
 import com.questio.questio_backend.dto.LoginRequestDTO;
 import com.questio.questio_backend.dto.UserRegisterRequestDTO;
 import com.questio.questio_backend.dto.UserResponseDTO;
-import com.questio.questio_backend.service.UserService;
+import com.questio.questio_backend.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 
 public class AuthController {
-    private final UserService userService;
+    private final AuthService userService;
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody UserRegisterRequestDTO request){
