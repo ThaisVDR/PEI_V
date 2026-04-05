@@ -8,9 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "usuarios")
@@ -59,6 +57,14 @@ public class User implements UserDetails {
     @Builder.Default
     @Column(name = "criado_em", updatable = false, nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @ManyToMany
+    @JoinTable(
+            name = "usuario_turmas",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_turma")
+    )
+    private Set<Class> turmas = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(){

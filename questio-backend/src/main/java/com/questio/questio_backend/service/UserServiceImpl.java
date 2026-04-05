@@ -3,6 +3,7 @@ package com.questio.questio_backend.service;
 import com.questio.questio_backend.dto.RankingDTO;
 import com.questio.questio_backend.dto.UserRankingResponseDTO;
 import com.questio.questio_backend.dto.UserResponseDTO;
+import com.questio.questio_backend.entity.Class;
 import com.questio.questio_backend.entity.User;
 import com.questio.questio_backend.entity.enums.TipoUsuario;
 import com.questio.questio_backend.repository.UserRepository;
@@ -49,13 +50,16 @@ public class UserServiceImpl implements UserService {
         return new UserRankingResponseDTO(top10Dtos, userStatus);
     }
 
-    // Helper method para pegar o usuário do Spring Security (DRY - Don't Repeat Yourself)
     private User getLoggedUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    // Helper para converter Entity -> DTO (Mantendo a lógica dos Enums que criamos)
     private UserResponseDTO mapToResponseDTO(User user, String msg) {
+
+        List<String> nomesTurmas = user.getTurmas().stream()
+                .map(Class::getNome)
+                .toList();
+
         return UserResponseDTO.builder()
                 .idUsuario(user.getIdUsuario())
                 .nome(user.getNome())
@@ -64,7 +68,9 @@ public class UserServiceImpl implements UserService {
                 .xpTotal(user.getXpTotal())
                 .nivel(user.getNivel())
                 .streakAtual(user.getStreakAtual())
+                .turmas(nomesTurmas)
                 .mensagem(msg)
                 .build();
     }
+
 }
