@@ -1,17 +1,17 @@
-import { useEffect } from "react";
 import { useRouter } from "expo-router";
+import { useEffect } from "react";
+import { View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { View, ActivityIndicator } from "react-native";
 
 export default function Index() {
   const router = useRouter();
 
   useEffect(() => {
-    async function checkAuth() {
+    const timer = setTimeout(async () => {
       const token = await AsyncStorage.getItem("token");
       const tipo = await AsyncStorage.getItem("tipoUsuario");
 
-      if (!token || !tipo) {
+      if (!token) {
         router.replace("/screens/(Authenticator)/Login");
         return;
       }
@@ -23,14 +23,10 @@ export default function Index() {
       } else {
         router.replace("/screens/(Authenticator)/Login");
       }
-    }
+    }, 0);
 
-    checkAuth();
+    return () => clearTimeout(timer);
   }, []);
 
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <ActivityIndicator size="large" color="#00d2b4" />
-    </View>
-  );
+  return <View style={{ flex: 1, backgroundColor: "#0d1424" }} />;
 }
