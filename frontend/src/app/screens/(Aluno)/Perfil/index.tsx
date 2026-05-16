@@ -1,40 +1,73 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   ActivityIndicator,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
+  StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../../../context/AuthContext";
-import { ProfileHeader } from "../../../../components/profile/ProfileHeader";
-import { StatsGrid } from "../../../../components/profile/CardProfile";
-import { BadgeList } from "../../../../components/profile/BadgeProfile";
+import { ProfileHeader } from "../../../../components/Profile/ProfileHeader";
+import { StatsGrid } from "../../../../components/Profile/CardProfile";
+import { BadgeList } from "../../../../components/Profile/BadgeProfile";
 
+// Mapeamos um 'id' único para cruzar com o banco de dados
 const ALL_BADGES = [
-  { label: "Primeiro Passo", icon: "🚀", desbloqueada: false },
-  { label: "Streak de 7", icon: "🔥", desbloqueada: false },
-  { label: "Top 10", icon: "🏆", desbloqueada: false },
-  { label: "Maratonista", icon: "⚡", desbloqueada: false },
-  { label: "Hackathon", icon: "🖥️", desbloqueada: false },
+  {
+    id: "primeiro_passo",
+    label: "Primeiro Passo",
+    icon: "🚀",
+    desbloqueada: false,
+  },
+  { id: "streak_7", label: "Streak de 7", icon: "🔥", desbloqueada: false },
+  { id: "top_10", label: "Top 10", icon: "🏆", desbloqueada: false },
+  { id: "maratonista", label: "Maratonista", icon: "⚡", desbloqueada: false },
+  { id: "hackathon", label: "Hackathon", icon: "🖥️", desbloqueada: false },
 ];
 
 export default function Perfil() {
- const { user, logout, loading } = useAuth();
-  
-  console.log("USER:", JSON.stringify(user));
+  const { user, logout, loading } = useAuth();
   const router = useRouter();
 
+  console.log("USER NO PERFIL:", JSON.stringify(user));
+
   async function handleLogout() {
-    await logout();
-    router.replace("/screens/(Authenticator)/Login");
+    try {
+      await logout();
+      router.replace("/screens/(Authenticator)/Login");
+    } catch (error) {
+      console.error("Erro ao deslogar:", error);
+    }
   }
+
+  const userAny = user as any;
+
+  // Processa as insígnias dinamicamente usando useMemo para evitar re-renderizações desnecessárias
+  const { badgesUsuario, totalInsignias } = useMemo(() => {
+    // Array contendo os IDs das insígnias que o usuário possui (vindo do banco)
+    // Adapte 'user?.insignias' para o nome exato da propriedade que vem do seu backend
+    const insigniasConquistadas = Array.isArray(userAny?.insignias)
+      ? userAny.insignias
+      : [];
+
+    const listaAtualizada = ALL_BADGES.map((badge) => ({
+      ...badge,
+      // Se o ID da insígnia global estiver na lista do usuário, ela é desbloqueada
+      desbloqueada: insigniasConquistadas.includes(badge.id),
+    }));
+
+    return {
+      badgesUsuario: listaAtualizada,
+      totalInsignias: insigniasConquistadas.length,
+    };
+  }, [userAny?.insignias]);
 
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator color="#0f62ff" />
+        <ActivityIndicator color="#0f62ff" size="large" />
       </View>
     );
   }
@@ -43,7 +76,7 @@ export default function Perfil() {
     { label: "XP Total", value: String(user?.xpTotal ?? 0) },
     { label: "Streak Atual", value: String(user?.streakAtual ?? 0) },
     { label: "Nível", value: String(user?.nivel ?? 1) },
-    { label: "Insígnias", value: "0" },
+    { label: "Insígnias", value: String(totalInsignias) }, // Agora dinâmico!
   ];
 
   return (
@@ -52,15 +85,16 @@ export default function Perfil() {
       showsVerticalScrollIndicator={false}
     >
       <ProfileHeader
-        nome={user?.nome || "—"}
-        curso={user?.curso || "—"}
-        tipoUsuario={user?.tipoUsuario || "—"}
+        nome={user?.nome || "Usuário"}
+        curso={user?.curso || "Não informado"}
+        tipoUsuario={user?.tipoUsuario || "Aluno"}
         nivel={user?.nivel ?? 1}
       />
 
       <StatsGrid stats={stats} />
 
-      <BadgeList badges={ALL_BADGES} />
+      {/* Passa a lista atualizada com os booleanos corretos */}
+      <BadgeList badges={badgesUsuario} />
 
       <TouchableOpacity
         style={styles.logoutButton}
@@ -73,9 +107,7 @@ export default function Perfil() {
   );
 }
 
-import { StyleSheet } from "react-native";
-
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     paddingTop: 16,
@@ -95,7 +127,7 @@ export const styles = StyleSheet.create({
     borderRadius: 18,
     paddingVertical: 14,
     alignItems: "center",
-    marginTop: 8,
+    marginTop: 20,
   },
   logoutText: {
     color: "#ff4d6d",

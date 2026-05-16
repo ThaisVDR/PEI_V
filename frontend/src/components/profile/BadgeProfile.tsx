@@ -1,7 +1,8 @@
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View, StyleSheet } from "react-native";
 
 type Badge = {
+  id: string; // Adicionado id na tipagem para controle do map
   label: string;
   icon: string;
   desbloqueada: boolean;
@@ -20,7 +21,7 @@ export function BadgeList({ badges }: Props) {
       >
         {badges.map((badge) => (
           <View
-            key={badge.label}
+            key={badge.id} // Alterado para badge.id para evitar problemas com labels iguais
             style={[styles.card, !badge.desbloqueada && styles.locked]}
           >
             <View style={styles.iconBox}>
@@ -38,9 +39,7 @@ export function BadgeList({ badges }: Props) {
   );
 }
 
-import { StyleSheet } from "react-native";
-
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   title: {
     color: "#fff",
     fontSize: 18,

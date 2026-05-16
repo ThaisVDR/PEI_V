@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 
 type Props = {
   nome: string;
@@ -24,9 +24,7 @@ export function ProfileHeader({ nome, curso, tipoUsuario, nivel }: Props) {
   );
 }
 
-import { StyleSheet } from "react-native";
-
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     paddingVertical: 24,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 
 type Stat = { label: string; value: string };
 type Props = { stats: Stat[] };
@@ -17,9 +17,7 @@ export function StatsGrid({ stats }: Props) {
   );
 }
 
-import { StyleSheet } from "react-native";
-
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",

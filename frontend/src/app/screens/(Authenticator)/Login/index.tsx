@@ -15,8 +15,8 @@ import {
   Image,
 } from "react-native";
 
-import { Button } from "../../../../components/button/button";
-import { Input } from "../../../../components/input/input";
+import { Button } from "../../../../components/Button/button";
+import { Input } from "../../../../components/Input/input";
 import { styles } from "../../../../styles/Login";
 
 export default function Login() {
