@@ -18,6 +18,7 @@ import { Button } from "../../../../components/Button/button";
 import { Input } from "../../../../components/Input/input";
 import { RadioSelect } from "../../../../components/RadioSelect/radioSelect";
 import { styles } from "../../../../styles/Register";
+import { ScreenLoader } from "../../../../components/Loading/loader";
 
 export default function Register() {
   const router = useRouter();
@@ -27,6 +28,7 @@ export default function Register() {
   const [tipo, setTipo] = useState("Aluno");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   async function handleRegister() {
     if (loading) return;
@@ -35,45 +37,47 @@ export default function Register() {
       Alert.alert("Erro", "A senha deve ter pelo menos 8 caracteres");
       return;
     }
+
+    setLoadingMessage("Enviando dados de cadastro...");
     setLoading(true);
 
-    try {
-      console.log("Tentando conectar em:", `${API_URL}/auth/register`);
+    setTimeout(async () => {
+      try {
+        console.log("Tentando conectar em:", `${API_URL}/auth/register`);
 
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nome,
-          email,
-          curso,
-          tipoUsuario: tipo.toUpperCase(),
-          senha,
-          termoAceito: true,
-        }),
-      });
+        const response = await fetch(`${API_URL}/auth/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome,
+            email,
+            curso,
+            tipoUsuario: tipo.toUpperCase(),
+            senha,
+          }),
+        });
 
-      console.log("Status:", response.status);
-      console.log("Headers:", JSON.stringify([...response.headers.entries()]));
+        console.log("Status:", response.status);
+        const text = await response.text();
+        console.log("Body da resposta:", text);
 
-      const text = await response.text();
-      console.log("Body da resposta:", text);
+        if (!response.ok) {
+          throw new Error(`Erro ${response.status}: ${text}`);
+        }
 
-      if (!response.ok) {
-        throw new Error(`Erro ${response.status}: ${text}`);
+        setLoadingMessage("Conta criada com sucesso!");
+
+        setTimeout(() => {
+          router.replace("/screens/(Authenticator)/Login");
+        }, 800);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Erro desconhecido";
+        console.error("Erro completo:", message);
+        Alert.alert("Erro", message);
+        setLoading(false);
       }
-
-      const data = text ? JSON.parse(text) : {};
-      Alert.alert("Sucesso", "Conta criada com sucesso!");
-      router.replace("/screens/(Authenticator)/Login");
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Erro desconhecido";
-      console.error("Erro completo:", message);
-      Alert.alert("Erro", message);
-    } finally {
-      setLoading(false);
-    }
+    }, 1500);
   }
 
   return (
@@ -81,6 +85,8 @@ export default function Register() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+      <ScreenLoader visible={loading} message={loadingMessage} />
+
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
@@ -106,6 +112,7 @@ export default function Register() {
               />
             </MaskedView>
           </View>
+
           <View style={styles.form}>
             <Input
               label="Nome Completo"
@@ -113,6 +120,7 @@ export default function Register() {
               placeholder="Digite seu nome completo"
               value={nome}
               onChangeText={setNome}
+              editable={!loading}
             />
 
             <Input
@@ -123,6 +131,7 @@ export default function Register() {
               autoCapitalize="none"
               value={email}
               onChangeText={setEmail}
+              editable={!loading}
             />
 
             <Input
@@ -131,6 +140,7 @@ export default function Register() {
               placeholder="Digite o nome do seu curso"
               value={curso}
               onChangeText={setCurso}
+              editable={!loading}
             />
 
             <RadioSelect
@@ -146,13 +156,13 @@ export default function Register() {
               isPassword
               value={senha}
               onChangeText={setSenha}
+              editable={!loading}
             />
 
             <View style={{ marginTop: 4 }}>
               <Button
-                title={loading ? "Carregando..." : "Cadastrar"}
+                title="Cadastrar"
                 onPress={handleRegister}
-                loading={loading}
                 disabled={loading || !nome || !email || !curso || !senha}
               />
             </View>
@@ -160,6 +170,7 @@ export default function Register() {
             <TouchableOpacity
               style={styles.footerLinks}
               onPress={() => router.push("/screens/(Authenticator)/Login")}
+              disabled={loading}
             >
               <Text style={styles.linkText}>
                 Já tem uma conta?{" "}

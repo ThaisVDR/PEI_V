@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
@@ -11,12 +11,26 @@ export default function Perfil() {
     router.replace("/screens/(Authenticator)/Login");
   }
   return (
-    <View>
+    <View style={styles.container}>
       <Text>Página de Perfil</Text>
-      <Text>PROFESSORR</Text>
+      <Text>PROFESSOR</Text>
       <TouchableOpacity onPress={handleLogout}>
-        <Text>Sair</Text>
+        <Text style={styles.logoutText}>Sair</Text>
       </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#050E1D",
+  },
+  logoutText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

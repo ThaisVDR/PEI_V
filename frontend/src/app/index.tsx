@@ -48,6 +48,8 @@ export default function Index() {
         router.replace("/screens/(Aluno)/Home");
       } else if (tipo === "Professor") {
         router.replace("/screens/(Professor)/Home");
+      } else if (tipo === "Coordenacao") {
+        router.replace("/screens/(Coordenador)/Home");
       } else {
         router.replace("/screens/(Authenticator)/Login");
       }

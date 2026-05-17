@@ -29,16 +29,31 @@ export function Input({
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
 
-      <View style={styles.inputWrapper}>
+      {/* Se for multiline, aumenta a altura para 120, alinha itens no topo e joga um padding superior */}
+      <View
+        style={[
+          styles.inputWrapper,
+          rest.multiline && {
+            height: 120,
+            alignItems: "flex-start",
+            paddingTop: 16,
+          },
+        ]}
+      >
         <Feather
           name={iconName}
           size={20}
           color="#555"
-          style={styles.iconLeft}
+          // Se for multiline, empurra o ícone de leve para baixo para alinhar com a primeira linha de texto
+          style={[styles.iconLeft, rest.multiline && { marginTop: 2 }]}
         />
 
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            // Se for multiline, força o alinhamento do placeholder e texto no topo esquerdo absoluto
+            rest.multiline && { textAlignVertical: "top", height: "100%" },
+          ]}
           placeholderTextColor="#555"
           secureTextEntry={secure}
           {...rest}
@@ -52,7 +67,13 @@ export function Input({
             <Feather name={secure ? "eye-off" : "eye"} size={20} color="#555" />
           </TouchableOpacity>
         ) : (
-          rightElement && <View style={styles.iconRight}>{rightElement}</View>
+          rightElement && (
+            <View
+              style={[styles.iconRight, rest.multiline && { marginTop: 2 }]}
+            >
+              {rightElement}
+            </View>
+          )
         )}
       </View>
     </View>

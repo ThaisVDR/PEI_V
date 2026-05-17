@@ -1,10 +1,9 @@
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
-import { API_URL } from "../../../../services/api";
 import { Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
+import { useAuth } from "../../../../context/AuthContext";
 import {
   Text,
   TouchableOpacity,
@@ -18,54 +17,50 @@ import {
 import { Button } from "../../../../components/Button/button";
 import { Input } from "../../../../components/Input/input";
 import { styles } from "../../../../styles/Login";
+import { ScreenLoader } from "../../../../components/Loading/loader";
 
 export default function Login() {
+  const { login } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   async function handleLogin() {
     if (!email || !senha) return;
 
+    setLoadingMessage("Carregando...");
     setLoading(true);
 
-    try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, senha }),
-      });
+    setTimeout(async () => {
+      try {
+        const usuarioLogado = await login(email, senha);
 
-      const data = await response.json();
+        setLoadingMessage("Logado com sucesso!");
 
-      if (!response.ok) {
-        throw new Error(data?.message || "Erro ao fazer login");
+        const tipo = usuarioLogado.tipoUsuario;
+
+        setTimeout(() => {
+          if (tipo === "Aluno") {
+            router.replace("/screens/(Aluno)/Home");
+          } else if (tipo === "Professor") {
+            router.replace("/screens/(Professor)/Home");
+          } else if (tipo === "Coordenacao") {
+            router.replace("/screens/(Coordenador)/Home");
+          } else {
+            Alert.alert("Erro", "Tipo de usuário inválido.");
+            setLoading(false);
+          }
+        }, 800);
+      } catch (error: any) {
+        Alert.alert(
+          "Erro no login",
+          error.message || "Verifique suas credenciais.",
+        );
+        setLoading(false);
       }
-
-      // Decodifica o JWT para pegar o tipo
-      const tokenPayload = JSON.parse(atob(data.token.split(".")[1]));
-      const tipo = tokenPayload.tipo;
-
-      console.log("Tipo extraído do JWT:", tipo);
-
-      console.log("Login OK:", data);
-
-      await AsyncStorage.setItem("token", data.token);
-      await AsyncStorage.setItem("tipoUsuario", tipo);
-
-      if (tipo === "Aluno") {
-        router.replace("/screens/(Aluno)/Home");
-      } else if (tipo === "Professor") {
-        router.replace("/screens/(Professor)/Home");
-      } else {
-        Alert.alert("Erro", "Tipo de usuário inválido.");
-      }
-    } catch (error: any) {
-      Alert.alert("Erro no login", error.message);
-    } finally {
-      setLoading(false);
-    }
+    }, 2000);
   }
 
   return (
@@ -73,6 +68,8 @@ export default function Login() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+      <ScreenLoader visible={loading} message={loadingMessage} />
+
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <View style={styles.header}>
@@ -99,6 +96,7 @@ export default function Login() {
               />
             </MaskedView>
           </View>
+
           <View style={styles.form}>
             <Input
               label="Email"
@@ -106,6 +104,7 @@ export default function Login() {
               placeholder="Digite o seu Email"
               value={email}
               onChangeText={setEmail}
+              editable={!loading}
             />
 
             <Input
@@ -115,12 +114,12 @@ export default function Login() {
               isPassword
               value={senha}
               onChangeText={setSenha}
+              editable={!loading}
             />
 
             <Button
               title="Entrar"
               onPress={handleLogin}
-              loading={loading}
               disabled={!email || !senha}
             />
 
