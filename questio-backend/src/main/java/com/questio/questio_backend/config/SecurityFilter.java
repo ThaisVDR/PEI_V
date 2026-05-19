@@ -38,7 +38,6 @@ public class SecurityFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            // Token inválido — limpa contexto e deixa o fluxo continuar
             SecurityContextHolder.clearContext();
         }
 

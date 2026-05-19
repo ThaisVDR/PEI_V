@@ -10,7 +10,6 @@ import com.questio.questio_backend.entity.User;
 import com.questio.questio_backend.repository.ClassRepository;
 import com.questio.questio_backend.repository.SubmitRepository;
 import com.questio.questio_backend.repository.TaskRepository;
-import com.questio.questio_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,8 +26,8 @@ public class TaskService {
 
     private final TaskRepository tarefaRepository;
     private final SubmitRepository submissaoRepository;
-    private final UserRepository userRepository;
     private final ClassRepository turmaRepository;
+    private final GamificationService gamificationService;
 
     @Transactional
     public TaskResponseDTO criarTarefa(TaskRequestDTO dto) {
@@ -55,6 +54,10 @@ public class TaskService {
     public String submeterTarefa(SubmitRequestDTO dto) {
         User aluno = (User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
 
+        if (Boolean.TRUE.equals(aluno.getAcessoBloqueado())) {
+            throw new RuntimeException("Acesso bloqueado. Entre em contato com a coordenação.");
+        }
+
         Task tarefa = tarefaRepository.findById(dto.idTask())
                 .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
 
@@ -72,28 +75,19 @@ public class TaskService {
 
         submissaoRepository.save(submissao);
 
-        this.updateUserXp(aluno, tarefa.getPontos());
+        gamificationService.touchActivity(aluno.getIdUsuario());
+        gamificationService.addXp(aluno.getIdUsuario(), tarefa.getPontos() == null ? 0 : tarefa.getPontos());
 
         return "Tarefa enviada com sucesso! +" + tarefa.getPontos() + " XP";
-    }
-
-    private void updateUserXp(User user, Integer pontosGanhos) {
-        int xpAtual = (user.getXpTotal() != null) ? user.getXpTotal() : 0;
-        int novoXp = xpAtual + pontosGanhos;
-        user.setXpTotal(novoXp);
-
-        int novoNivel = (int) (Math.sqrt(novoXp) / 10) + 1;
-
-        if (novoNivel > user.getNivel()) {
-            user.setNivel(novoNivel);
-        }
-
-        userRepository.save(user);
     }
 
     public List<TaskResponseDTO> listarTarefasDoAluno() {
 
         User aluno = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (Boolean.TRUE.equals(aluno.getAcessoBloqueado())) {
+            throw new RuntimeException("Acesso bloqueado. Entre em contato com a coordenação.");
+        }
 
         Set<Class> turmas = aluno.getTurmas();
 

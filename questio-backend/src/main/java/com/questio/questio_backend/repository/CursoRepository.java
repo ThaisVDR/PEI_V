@@ -14,12 +14,14 @@ public interface CursoRepository extends JpaRepository<Curso, UUID> {
 
     long countByAtivoTrue();
 
-    @Query("SELECT new com.questio.questio_backend.dto.CursoDashboardDTO(c.idCurso, c.nome, COUNT(DISTINCT a.idUsuario)) " +
-            "FROM Curso c " +
-            "LEFT JOIN c.turmas t " +
-            "LEFT JOIN t.alunos a " +
-            "WHERE c.ativo = true " +
-            "GROUP BY c.idCurso, c.nome")
+    @Query("""
+            select new com.questio.questio_backend.dto.CursoDashboardDTO(
+                c.idCurso,
+                c.nome,
+                (select count(u) from User u where u.curso = c.nome)
+            )
+            from Curso c
+            where c.ativo = true
+            """)
     List<CursoDashboardDTO> findCursosAtivosComQuantidadeDeAlunos();
 }
-

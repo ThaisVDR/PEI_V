@@ -63,6 +63,17 @@ public class User implements UserDetails {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Builder.Default
+    @Column(name = "acesso_bloqueado", nullable = false)
+    private Boolean acessoBloqueado = false;
+
+    @Builder.Default
+    @Column(name = "ultima_atividade_em", nullable = false)
+    private LocalDateTime ultimaAtividadeEm = LocalDateTime.now();
+
+    @Column(name = "ultimo_checkin_em")
+    private LocalDateTime ultimoCheckinEm;
+
+    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "usuario_turmas",

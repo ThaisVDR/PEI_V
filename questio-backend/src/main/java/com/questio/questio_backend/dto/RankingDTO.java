@@ -1,5 +1,11 @@
 package com.questio.questio_backend.dto;
 
-public class RankingDTO {
-    
-}
+import java.util.UUID;
+
+public record RankingDTO(
+        UUID idUsuario,
+        String nome,
+        int xpTotal,
+        int nivel,
+        Long posicao
+) {}

@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -22,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final GamificationService gamificationService;
 
     @Override
     public UserResponseDTO registerNewUser(UserRegisterRequestDTO request) {
@@ -84,13 +86,26 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserResponseDTO getUserProfile(UUID userId) {
-        // Implementar depois
-        return null;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        TipoUsuario tipo = TipoUsuario.fromString(user.getTipoUsuario());
+        return UserResponseDTO.builder()
+                .idUsuario(user.getIdUsuario())
+                .nome(user.getNome())
+                .email(user.getEmail())
+                .curso(user.getCurso())
+                .tipoUsuario(tipo)
+                .termoAceito(user.getTermoAceito())
+                .xpTotal(user.getXpTotal())
+                .nivel(user.getNivel())
+                .streakAtual(user.getStreakAtual())
+                .acessoBloqueado(Boolean.TRUE.equals(user.getAcessoBloqueado()))
+                .build();
     }
 
     @Override
     public UserResponseDTO updateStreak(UUID userId, Integer novosPontos) {
-        // Implementar depois (gamificação)
-        return null;
+        return gamificationService.checkin(userId);
     }
 }

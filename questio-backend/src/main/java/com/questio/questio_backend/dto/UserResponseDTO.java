@@ -21,5 +21,6 @@ public class UserResponseDTO {
     private Integer xpTotal;
     private Integer nivel;
     private Integer streakAtual;
+    private Boolean acessoBloqueado;
     private String mensagem;
 }

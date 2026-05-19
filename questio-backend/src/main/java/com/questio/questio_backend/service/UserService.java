@@ -16,15 +16,8 @@ public interface UserService {
     UserResponseDTO updateStreak(UUID userId, Integer novosPontos);
 
     Object login(@Valid LoginRequestDTO data);
-
-    /**
-     * Retorna o perfil do usuário autenticado no momento.
-     * Obs.: o comportamento depende do fluxo de autenticação (JWT).
-     */
     UserResponseDTO getAuthenticatedUserProfile();
-
-    /**
-     * Retorna o ranking (placeholder por enquanto).
-     */
     UserRankingResponseDTO getUserRankingStatus();
+    UserResponseDTO setAcessoBloqueado(UUID userId, boolean bloqueado);
+    void touchUltimaAtividade(UUID userId);
 }
