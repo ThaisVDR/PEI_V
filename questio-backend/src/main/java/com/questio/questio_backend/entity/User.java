@@ -73,6 +73,9 @@ public class User implements UserDetails {
     @Column(name = "ultimo_checkin_em")
     private LocalDateTime ultimoCheckinEm;
 
+    @Column(name = "email_verificado", nullable = false)
+    private Boolean emailVerificado = false;
+
     @Builder.Default
     @ManyToMany
     @JoinTable(

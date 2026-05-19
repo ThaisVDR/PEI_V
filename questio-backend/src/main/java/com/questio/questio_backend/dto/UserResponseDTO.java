@@ -1,26 +1,21 @@
 package com.questio.questio_backend.dto;
 
 import com.questio.questio_backend.entity.enums.TipoUsuario;
-import lombok.*;
+import lombok.Builder;
 
 import java.util.UUID;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class UserResponseDTO {
-
-    private UUID idUsuario;
-    private String nome;
-    private String email;
-    private String curso;
-    private TipoUsuario tipoUsuario;
-    private Boolean termoAceito;
-    private Integer xpTotal;
-    private Integer nivel;
-    private Integer streakAtual;
-    private Boolean acessoBloqueado;
-    private String mensagem;
-}
+public record UserResponseDTO(
+        UUID idUsuario,
+        String nome,
+        String email,
+        String curso,
+        TipoUsuario tipoUsuario,
+        Boolean termoAceito,
+        Integer xpTotal,
+        Integer nivel,
+        Integer streakAtual,
+        Boolean acessoBloqueado,
+        String mensagem
+) {}

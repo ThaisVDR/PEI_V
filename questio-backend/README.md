@@ -21,7 +21,7 @@ Na raiz do projeto:
 docker-compose up -d
 ```
 
-> O `docker-compose.yml` sobe um PostgreSQL em `localhost:5432` com DB `questio_db`, usuário `postgres`, senha `root`.
+> O `docker-compose.yml` sobe um PostgreSQL em `localhost:5433` com DB `questio_db`, usuário `postgres`, senha `root` (porta externa 5433 para evitar conflitos locais).
 
 ### 2) Rodar a aplicação
 
@@ -89,6 +89,8 @@ Body (JSON):
 
 Resposta: `UserResponseDTO` (em caso de erro, vem `mensagem` preenchida).
 
+> Observação (fase 3): após cadastrar, o usuário precisa **confirmar o e-mail** para conseguir fazer login.
+
 #### `POST /api/auth/login`
 Login do usuário.
 
@@ -101,6 +103,31 @@ Resposta:
 ```json
 { "token": "<jwt>", "mensagem": "Login bem-sucedido!" }
 ```
+
+#### `GET /api/auth/verificar-email?token=...`
+Endpoint chamado pelo link enviado por e-mail no cadastro. Ativa a conta do usuário.
+
+Resposta: texto simples (`"Conta ativada com sucesso! Você já pode fazer login."`).
+
+#### `POST /api/auth/forgot-password`
+Solicita link/token de redefinição de senha por e-mail.
+
+Body (JSON):
+```json
+{ "email": "joao@email.com" }
+```
+
+Resposta: texto simples (por segurança a mensagem é genérica).
+
+#### `POST /api/auth/reset-password`
+Redefine senha usando token gerado no “forgot-password”.
+
+Body (JSON):
+```json
+{ "token": "<token>", "novaSenha": "NovaSenha123" }
+```
+
+Resposta: texto simples (`"Senha redefinida com sucesso!"`).
 
 ### Usuário
 
@@ -203,6 +230,13 @@ Resposta: `List<TaskResponseDTO>`.
 ## Testes
 
 Os testes (`./mvnw test`) rodam com banco em memória (H2) via `src/test/resources/application.properties`, então **não precisa** de Postgres rodando para passar o `contextLoads`.
+
+## Migrations (Flyway)
+
+O projeto usa **Flyway** com migrations em `src/main/resources/db/migration` (V1, V2, V3, V4...).
+
+- Por padrão, ao subir a aplicação apontando para o PostgreSQL do `docker-compose.yml`, o Flyway aplica as migrations automaticamente.
+- `spring.jpa.hibernate.ddl-auto` está configurado como `validate` para evitar que o Hibernate “crie/alterar” tabelas por conta própria em produção/dev.
 
 ## Padrão de erros (JSON)
 

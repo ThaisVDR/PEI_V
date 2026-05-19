@@ -45,7 +45,7 @@ class GamificationServiceImplTest {
 
         var response = gamificationService.checkin(user.getIdUsuario());
 
-        assertThat(response.getStreakAtual()).isEqualTo(1);
+        assertThat(response.streakAtual()).isEqualTo(1);
         var salvo = userRepository.findById(user.getIdUsuario()).orElseThrow();
         assertThat(salvo.getUltimoCheckinEm()).isNotNull();
         assertThat(salvo.getStreakAtual()).isEqualTo(1);
@@ -60,7 +60,7 @@ class GamificationServiceImplTest {
 
         var response = gamificationService.checkin(user.getIdUsuario());
 
-        assertThat(response.getStreakAtual()).isEqualTo(4);
+        assertThat(response.streakAtual()).isEqualTo(4);
     }
 
     @Test
@@ -72,7 +72,7 @@ class GamificationServiceImplTest {
 
         var response = gamificationService.checkin(user.getIdUsuario());
 
-        assertThat(response.getStreakAtual()).isEqualTo(5);
+        assertThat(response.streakAtual()).isEqualTo(5);
     }
 
     @Test
@@ -85,11 +85,10 @@ class GamificationServiceImplTest {
 
         var response = gamificationService.checkin(user.getIdUsuario());
 
-        assertThat(response.getStreakAtual()).isEqualTo(0);
+        assertThat(response.streakAtual()).isEqualTo(0);
         var salvo = userRepository.findById(user.getIdUsuario()).orElseThrow();
         assertThat(salvo.getStreakAtual()).isEqualTo(0);
         // Para não resetar repetidamente no mesmo dia, o último check-in deve ser atualizado.
         assertThat(salvo.getUltimoCheckinEm()).isNotNull();
     }
 }
-

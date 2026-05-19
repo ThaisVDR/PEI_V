@@ -16,6 +16,7 @@ import java.util.UUID;
 public class SubmitTask {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id_submissao")
     private UUID idSubmit;
 
     @ManyToOne(fetch = FetchType.LAZY)

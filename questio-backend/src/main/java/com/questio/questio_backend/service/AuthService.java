@@ -15,4 +15,6 @@ public interface AuthService {
     UserResponseDTO updateStreak(UUID userId, Integer novosPontos);
 
     Object login(@Valid LoginRequestDTO data);
+
+    void verificarEmail(String tokenString);
 }

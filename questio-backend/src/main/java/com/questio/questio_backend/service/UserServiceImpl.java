@@ -32,19 +32,19 @@ public class UserServiceImpl implements  UserService{
     @Override
     public UserResponseDTO registerNewUser(UserRegisterRequestDTO request) {
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.email())) {
             return UserResponseDTO.builder()
                     .mensagem("E-mail já cadastrado!!")
                     .build();
         }
 
-        if (Boolean.FALSE.equals(request.getTermoAceito())) {
+        if (Boolean.FALSE.equals(request.termoAceito())) {
             return UserResponseDTO.builder()
                     .mensagem("É necessario aceitar os termos")
                     .build();
         }
 
-        TipoUsuario tipo = request.getTipoUsuario();
+        TipoUsuario tipo = request.tipoUsuario();
         if (tipo == null) {
             return UserResponseDTO.builder()
                     .mensagem("Tipo de Usuário Inválido")
@@ -52,10 +52,10 @@ public class UserServiceImpl implements  UserService{
         }
 
         User newUser = User.builder()
-                .nome(request.getNome())
-                .email(request.getEmail())
-                .senha(passwordEncoder.encode(request.getSenha()))
-                .curso(request.getCurso())
+                .nome(request.nome())
+                .email(request.email())
+                .senha(passwordEncoder.encode(request.senha()))
+                .curso(request.curso())
                 .tipoUsuario(tipo.getValor())
                 .termoAceito(true)
                 .xpTotal(0)
