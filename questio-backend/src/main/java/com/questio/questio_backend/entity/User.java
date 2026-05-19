@@ -9,7 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -60,9 +62,21 @@ public class User implements UserDetails {
     @Column(name = "criado_em", updatable = false, nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Builder.Default
+    @ManyToMany
+    @JoinTable(
+            name = "usuario_turmas",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_turma")
+    )
+    private Set<Class> turmas = new HashSet<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(){
-        return List.of(new SimpleGrantedAuthority("ROLE" + this.tipoUsuario.toUpperCase()));
+        if (this.tipoUsuario == null || this.tipoUsuario.isBlank()) {
+            return List.of();
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.tipoUsuario.toUpperCase()));
     }
 
     @Override

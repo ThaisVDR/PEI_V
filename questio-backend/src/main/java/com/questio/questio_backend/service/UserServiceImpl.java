@@ -2,6 +2,7 @@ package com.questio.questio_backend.service;
 
 import com.questio.questio_backend.dto.LoginRequestDTO;
 import com.questio.questio_backend.dto.LoginResponseDTO;
+import com.questio.questio_backend.dto.UserRankingResponseDTO;
 import com.questio.questio_backend.dto.UserRegisterRequestDTO;
 import com.questio.questio_backend.dto.UserResponseDTO;
 import com.questio.questio_backend.entity.User;
@@ -10,9 +11,11 @@ import com.questio.questio_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -92,5 +95,34 @@ public class UserServiceImpl implements  UserService{
     public UserResponseDTO updateStreak(UUID userId, Integer novosPontos) {
         // Implementar depois (gamificação)
         return null;
+    }
+
+    @Override
+    public UserResponseDTO getAuthenticatedUserProfile() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof User user)) {
+            return UserResponseDTO.builder()
+                    .mensagem("Usuário não autenticado")
+                    .build();
+        }
+
+        TipoUsuario tipo = TipoUsuario.fromString(user.getTipoUsuario());
+        return UserResponseDTO.builder()
+                .idUsuario(user.getIdUsuario())
+                .nome(user.getNome())
+                .email(user.getEmail())
+                .curso(user.getCurso())
+                .tipoUsuario(tipo)
+                .termoAceito(user.getTermoAceito())
+                .xpTotal(user.getXpTotal())
+                .nivel(user.getNivel())
+                .streakAtual(user.getStreakAtual())
+                .build();
+    }
+
+    @Override
+    public UserRankingResponseDTO getUserRankingStatus() {
+        // TODO: implementar ranking real (top 10 + posição do usuário atual)
+        return new UserRankingResponseDTO(List.of(), null);
     }
 }

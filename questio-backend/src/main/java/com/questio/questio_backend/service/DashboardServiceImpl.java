@@ -2,13 +2,13 @@ package com.questio.questio_backend.service;
 
 import com.questio.questio_backend.dto.DashboardResumoDTO;
 import com.questio.questio_backend.dto.CursoDashboardDTO;
-import com.questio.questio_backend.entity.TipoUsuario;
+import com.questio.questio_backend.entity.enums.TipoUsuario;
 import com.questio.questio_backend.repository.CursoRepository;
 import com.questio.questio_backend.repository.UserRepository;
-import com.questio.questio_backend.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.readOnly = true;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
