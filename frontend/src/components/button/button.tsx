@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Animated,
   Easing,
-  View,
+  View, ViewStyle
 } from "react-native";
 
 interface Props extends TouchableOpacityProps {
@@ -15,8 +15,15 @@ interface Props extends TouchableOpacityProps {
   loading?: boolean;
 }
 
-export function Button({ title, loading, disabled, ...rest }: Props) {
+export function Button({ title, loading, disabled, style, ...rest }: Props) {
   const rotationAnim = useRef(new Animated.Value(0)).current;
+
+  const flatStyle = StyleSheet.flatten([styles.container, style]) as ViewStyle;
+  const borderRadius = flatStyle?.borderRadius ?? 12;
+  
+  const paddingHorizontal = flatStyle?.paddingHorizontal ?? 0;
+  const paddingVertical = flatStyle?.paddingVertical ?? 0;
+
 
   useEffect(() => {
     if (loading) {
@@ -42,7 +49,7 @@ export function Button({ title, loading, disabled, ...rest }: Props) {
 
   return (
     <TouchableOpacity
-      style={styles.container}
+      style={[styles.container, style]}
       activeOpacity={0.7}
       disabled={disabled || loading}
       {...rest}
@@ -51,7 +58,9 @@ export function Button({ title, loading, disabled, ...rest }: Props) {
         colors={["#007BFF", "#00D2B4"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        style={[styles.gradient, (disabled || loading) && { opacity: 0.6 }]}
+        style={[styles.gradient,
+          { borderRadius , paddingHorizontal, paddingVertical }, // ← passa o borderRadius para o gradiente
+          (disabled || loading) && { opacity: 0.6 }]}
       >
         {loading ? (
           <Animated.View
