@@ -1,36 +1,62 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useRouter } from "expo-router";
+import { useAuth } from "../../../../context/AuthContext";
+import { ProfileHeader } from "../../../../components/profileHeader";
+import { StatsGrid } from "../../../../components/cardProfile";
+import { BadgeList } from "../../../../components/badgeProfile";
+import { ALL_BADGES, getStats } from "../../../../data/Perfil";
+import { styles } from "../../../../styles/Perfil";
 
 export default function Perfil() {
+  const { user, logout, loading } = useAuth();
+
+  console.log("USER:", JSON.stringify(user));
   const router = useRouter();
+
+  const stats = getStats(user);
+
   async function handleLogout() {
-    await AsyncStorage.removeItem("token");
-    await AsyncStorage.removeItem("tipoUsuario");
+    await logout();
     router.replace("/screens/(Authenticator)/Login");
   }
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator color="#0f62ff" />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Página de Perfil</Text>
-      <Text>PROFESSOR</Text>
-      <TouchableOpacity onPress={handleLogout}>
-        <Text style={styles.logoutText}>Sair</Text>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    >
+      <ProfileHeader
+        nome={user?.nome || "—"}
+        curso={user?.email || "—"}
+        tipoUsuario={user?.tipoUsuario || "—"}
+        nivel={1}
+      />
+      <StatsGrid stats={stats} />
+
+      <BadgeList badges={ALL_BADGES} />
+
+      <TouchableOpacity
+        style={styles.logoutButton}
+        activeOpacity={0.8}
+        onPress={handleLogout}
+      >
+        <Text style={styles.logoutText}>Sair da conta</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#050E1D",
-  },
-  logoutText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

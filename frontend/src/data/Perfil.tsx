@@ -8,9 +8,6 @@ export const ALL_BADGES = [
 
 import { UsuarioLogado } from "../context/AuthContext";
 
-// data/Perfil.ts
-
-// data/Perfil.ts
 
 export function getStats(user: UsuarioLogado | null) {
   return [

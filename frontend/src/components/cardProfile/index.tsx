@@ -9,7 +9,7 @@ interface Stat {
   value: string | number;
   icon?: keyof typeof Ionicons.glyphMap;
   iconColor?: IconColor;
-  smallValue?: boolean;  // ← adiciona aqui
+  smallValue?: boolean; 
 }
 
 interface Props {

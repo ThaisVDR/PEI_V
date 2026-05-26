@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Trocado para os ícones nativos do Expo
+import { Ionicons } from "@expo/vector-icons"; 
 
 interface StreakCardProps {
   streak: number;

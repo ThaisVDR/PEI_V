@@ -1,12 +1,27 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Pressable, TextInput, TouchableOpacity, ScrollView, Modal } from "react-native";
-import { Button } from "../../../../components/button/button";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Modal,
+} from "react-native";
+import { Button } from "../../../../components/Button/button";
 import { styles } from "../../../../styles/Tasks";
-import { DISCIPLINAS, MONTH_NAMES, Tarefa, TAREFAS_INICIAIS, WEEK_DAYS } from "../../../../data/Tasks";
+import {
+  DISCIPLINAS,
+  MONTH_NAMES,
+  Tarefa,
+  TAREFAS_INICIAIS,
+  WEEK_DAYS,
+} from "../../../../data/Tasks";
 import TaskFilterTabs, { TaskFilter } from "../../../../components/pill/pill";
 
 function formatDate(date: Date) {
-  const day = date.getDate().toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, "0");
   const month = MONTH_NAMES[date.getMonth()];
   return `${day} ${month}`;
 }
@@ -23,7 +38,10 @@ function getMonthMatrix(date: Date) {
   for (let week = 0; week < 6; week += 1) {
     const days: Array<{ date: Date; currentMonth: boolean }> = [];
     for (let day = 0; day < 7; day += 1) {
-      days.push({ date: new Date(current), currentMonth: current.getMonth() === month });
+      days.push({
+        date: new Date(current),
+        currentMonth: current.getMonth() === month,
+      });
       current.setDate(current.getDate() + 1);
     }
     matrix.push(days);
@@ -33,26 +51,26 @@ function getMonthMatrix(date: Date) {
 }
 
 export default function Tasks() {
-  const [filter, setFilter] = useState<TaskFilter>('todas');
+  const [filter, setFilter] = useState<TaskFilter>("todas");
   const [tarefas, setTarefas] = useState<Tarefa[]>(TAREFAS_INICIAIS);
   const [modalVisible, setModalVisible] = useState(false);
-  const [novaCategoria, setNovaCategoria] = useState('');
-  const [novoTitulo, setNovoTitulo] = useState('');
+  const [novaCategoria, setNovaCategoria] = useState("");
+  const [novoTitulo, setNovoTitulo] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(new Date());
 
   const tarefasFiltradas = tarefas.filter((tarefa) => {
-    if (filter === 'pendentes') return !tarefa.concluida;
-    if (filter === 'concluidas') return tarefa.concluida;
+    if (filter === "pendentes") return !tarefa.concluida;
+    if (filter === "concluidas") return tarefa.concluida;
     return true;
   });
 
   function toggleConclusao(id: string) {
     setTarefas((prev) =>
       prev.map((tarefa) =>
-        tarefa.id === id ? { ...tarefa, concluida: !tarefa.concluida } : tarefa
-      )
+        tarefa.id === id ? { ...tarefa, concluida: !tarefa.concluida } : tarefa,
+      ),
     );
   }
 
@@ -66,8 +84,8 @@ export default function Tasks() {
   }
 
   function limparFormulario() {
-    setNovoTitulo('');
-    setNovaCategoria('');
+    setNovoTitulo("");
+    setNovaCategoria("");
     setSelectedDate(null);
     setCalendarVisible(false);
     setCalendarMonth(new Date());
@@ -104,7 +122,9 @@ export default function Tasks() {
   }
 
   function mudarMes(increment: number) {
-    setCalendarMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + increment, 1));
+    setCalendarMonth(
+      (prev) => new Date(prev.getFullYear(), prev.getMonth() + increment, 1),
+    );
   }
 
   const calendarMatrix = getMonthMatrix(calendarMonth);
@@ -113,12 +133,14 @@ export default function Tasks() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Tarefas</Text>
-        <Button title={'+ Nova Tarefa'} onPress={abrirModal} style={styles.newTaskButton}/>
       </View>
 
       <TaskFilterTabs activeFilter={filter} onFilterChange={setFilter} />
 
-      <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
+      >
         {tarefasFiltradas.map((tarefa) => (
           <View key={tarefa.id} style={styles.card}>
             <TouchableOpacity
@@ -126,11 +148,21 @@ export default function Tasks() {
               activeOpacity={0.8}
               onPress={() => toggleConclusao(tarefa.id)}
             >
-              <View style={[styles.checkbox, tarefa.concluida && styles.checkboxActive]}>
+              <View
+                style={[
+                  styles.checkbox,
+                  tarefa.concluida && styles.checkboxActive,
+                ]}
+              >
                 {tarefa.concluida && <View style={styles.checkboxTick} />}
               </View>
               <View style={styles.cardContent}>
-                <Text style={[styles.cardTitle, tarefa.concluida && styles.cardTitleDone]}>
+                <Text
+                  style={[
+                    styles.cardTitle,
+                    tarefa.concluida && styles.cardTitleDone,
+                  ]}
+                >
                   {tarefa.titulo}
                 </Text>
                 <View style={styles.metaRow}>
@@ -155,10 +187,18 @@ export default function Tasks() {
                 return (
                   <Pressable
                     key={disciplina}
-                    style={[styles.disciplinaButton, selecionada && styles.disciplinaButtonActive]}
+                    style={[
+                      styles.disciplinaButton,
+                      selecionada && styles.disciplinaButtonActive,
+                    ]}
                     onPress={() => setNovaCategoria(disciplina)}
                   >
-                    <Text style={[styles.disciplinaText, selecionada && styles.disciplinaTextActive]}>
+                    <Text
+                      style={[
+                        styles.disciplinaText,
+                        selecionada && styles.disciplinaTextActive,
+                      ]}
+                    >
                       {disciplina}
                     </Text>
                   </Pressable>
@@ -177,22 +217,31 @@ export default function Tasks() {
 
             <Text style={styles.fieldLabel}>Prazo</Text>
             <Pressable style={styles.input} onPress={abrirCalendario}>
-              <Text style={selectedDate ? styles.dateText : styles.placeholderText}>
-                {selectedDate ? formatDate(selectedDate) : 'Selecione a data' }
+              <Text
+                style={selectedDate ? styles.dateText : styles.placeholderText}
+              >
+                {selectedDate ? formatDate(selectedDate) : "Selecione a data"}
               </Text>
             </Pressable>
 
             {calendarVisible && (
               <View style={styles.calendarBox}>
                 <View style={styles.calendarHeader}>
-                  <Pressable style={styles.monthNav} onPress={() => mudarMes(-1)}>
-                    <Text style={styles.monthNavText}>{'<'}</Text>
+                  <Pressable
+                    style={styles.monthNav}
+                    onPress={() => mudarMes(-1)}
+                  >
+                    <Text style={styles.monthNavText}>{"<"}</Text>
                   </Pressable>
                   <Text style={styles.calendarTitle}>
-                    {MONTH_NAMES[calendarMonth.getMonth()]} {calendarMonth.getFullYear()}
+                    {MONTH_NAMES[calendarMonth.getMonth()]}{" "}
+                    {calendarMonth.getFullYear()}
                   </Text>
-                  <Pressable style={styles.monthNav} onPress={() => mudarMes(1)}>
-                    <Text style={styles.monthNavText}>{'>'}</Text>
+                  <Pressable
+                    style={styles.monthNav}
+                    onPress={() => mudarMes(1)}
+                  >
+                    <Text style={styles.monthNavText}>{">"}</Text>
                   </Pressable>
                 </View>
                 <View style={styles.weekDaysRow}>
