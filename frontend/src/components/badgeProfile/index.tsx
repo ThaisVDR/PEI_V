@@ -3,29 +3,54 @@ import { View, Text, StyleSheet } from "react-native";
 
 interface Badge {
   label: string;
+  description?: string;
   icon: string;
   desbloqueada: boolean;
 }
 
 interface Props {
   badges: Badge[];
+  totalDesbloqueadas?: number;
 }
 
-export function BadgeList({ badges }: Props) {
+export function BadgeList({ badges, totalDesbloqueadas = 0 }: Props) {
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Insígnias</Text>
+      <View style={styles.header}>
+        <Text style={styles.titulo}>Insígnias</Text>
+        <View style={styles.contador}>
+          <Text style={styles.contadorTexto}>
+            {totalDesbloqueadas} / {badges.length}
+          </Text>
+        </View>
+      </View>
+
       <View style={styles.list}>
         {badges.map((badge, index) => (
           <View
             key={index}
             style={[styles.item, !badge.desbloqueada && styles.bloqueado]}
           >
-            <Text style={styles.icone}>{badge.icon}</Text>
-            <Text style={[styles.nome, !badge.desbloqueada && styles.textoInativo]}>
-              {badge.label}
-            </Text>
-            {!badge.desbloqueada && (
+            <View style={[styles.iconContainer, !badge.desbloqueada && styles.iconContainerBloqueado]}>
+              <Text style={styles.icone}>{badge.icon}</Text>
+            </View>
+
+            <View style={styles.info}>
+              <Text style={[styles.nome, !badge.desbloqueada && styles.nomeBloqueado]}>
+                {badge.label}
+              </Text>
+              {badge.description && (
+                <Text style={[styles.descricao, !badge.desbloqueada && styles.descricaoBloqueada]}>
+                  {badge.description}
+                </Text>
+              )}
+            </View>
+
+            {badge.desbloqueada ? (
+              <View style={styles.checkContainer}>
+                <Text style={styles.checkIcon}>✓</Text>
+              </View>
+            ) : (
               <Text style={styles.cadeado}>🔒</Text>
             )}
           </View>
@@ -40,39 +65,92 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 24,
   },
-  titulo: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#1A1A2E",
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 12,
   },
+  titulo: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#E8EDF8",
+  },
+  contador: {
+    backgroundColor: "#162035",
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderWidth: 0.5,
+    borderColor: "#2A4070",
+  },
+  contadorTexto: {
+    fontSize: 13,
+    color: "#5B7EB5",
+  },
   list: {
-    gap: 10,
+    gap: 8,
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F5F8FF",
+    backgroundColor: "#162035",
     borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#E0E8FF",
+    padding: 14,
+    borderWidth: 0.5,
+    borderColor: "#2A4A7F",
     gap: 12,
   },
   bloqueado: {
-    opacity: 0.5,
+    backgroundColor: "#131D30",
+    borderColor: "#1E2D47",
+    opacity: 0.6,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: "#1C2D50",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconContainerBloqueado: {
+    backgroundColor: "#161E2E",
   },
   icone: {
-    fontSize: 28,
+    fontSize: 22,
+  },
+  info: {
+    flex: 1,
+    gap: 2,
   },
   nome: {
-    flex: 1,
     fontSize: 14,
-    fontWeight: "600",
-    color: "#1A1A2E",
+    fontWeight: "500",
+    color: "#E8EDF8",
   },
-  textoInativo: {
-    color: "#999",
+  nomeBloqueado: {
+    color: "#8DA6C8",
+  },
+  descricao: {
+    fontSize: 12,
+    color: "#5B7EB5",
+  },
+  descricaoBloqueada: {
+    color: "#3D5070",
+  },
+  checkContainer: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#1E6E4A",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkIcon: {
+    fontSize: 13,
+    color: "#5DCA9A",
+    fontWeight: "600",
   },
   cadeado: {
     fontSize: 16,
