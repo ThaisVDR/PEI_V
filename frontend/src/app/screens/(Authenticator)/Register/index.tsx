@@ -14,9 +14,9 @@ import {
   Platform,
 } from "react-native";
 
-import { Button } from "../../../../components/Button/button";
-import { Input } from "../../../../components/Input/input";
-import { RadioSelect } from "../../../../components/RadioSelect/radioSelect";
+import { Button } from "../../../../components/button/button";
+import { Input } from "../../../../components/input/input";
+import { RadioSelect } from "../../../../components/radioSelect/radioSelect";
 import { styles } from "../../../../styles/Register";
 import { ScreenLoader } from "../../../../components/Loading/loader";
 

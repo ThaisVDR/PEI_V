@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
+  Image,
   ScrollView,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 
 import api from "../../../../services/api";
 import { styles } from "../../../../styles/Tasks";
 import TaskFilterTabs, { TaskFilter } from "../../../../components/pill/pill";
+import Ionicons from "@expo/vector-icons/build/Ionicons";
 
 interface Tarefa {
   id: string;
@@ -76,10 +78,23 @@ export default function Tasks() {
   }
 
   return (
+       
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Minhas Tarefas</Text>
+    <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require("../../../../../assets/icon_questio.png")}
+            style={styles.logo}
+          />
+        </View>
+        <TouchableOpacity style={styles.notification}>
+          <Ionicons name="notifications" size={30} color="#5D708A" />
+          <View style={styles.notificationBadge}>
+            <Text style={styles.badgeText}>2</Text>
+          </View>
+        </TouchableOpacity>
       </View>
+      <Text style={styles.pageTitle}>Tarefas</Text>
 
       <TaskFilterTabs activeFilter={filter} onFilterChange={setFilter} />
 

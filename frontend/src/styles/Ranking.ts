@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
   },
 
   rowHighlight: {
-    borderColor: "#00D2B4",
+    borderColor: "#0177F1",
     backgroundColor: "#08253F",
   },
 
@@ -67,7 +67,7 @@ export const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: "#14B8A6",
+    backgroundColor: "#0177F1",
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 10,

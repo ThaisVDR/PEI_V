@@ -13,7 +13,6 @@ import { useAuth } from "../../../../context/AuthContext";
 import { styles } from "../../../../styles/Ranking";
 import api from "../../../../services/api";
 import { Ionicons } from "@expo/vector-icons";
-import StreakCard from "../../../../components/Streak/streakCard";
 
 interface RankingDTO {
   nome: string;

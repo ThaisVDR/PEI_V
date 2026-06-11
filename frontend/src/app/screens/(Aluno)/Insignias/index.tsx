@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image , TouchableOpacity } from "react-native";
 import { styles } from "../../../../styles/Insignias";
 import { BADGES, CATEGORIES } from "../../../../data/Insignias";
+import Ionicons from "@expo/vector-icons/build/Ionicons";
 
 export default function Insignias() {
   const [activeCategory, setActiveCategory] = useState('todas');
@@ -14,9 +15,26 @@ export default function Insignias() {
   );
 
   return (
+     <View style={styles.container}>
+    <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require("../../../../../assets/icon_questio.png")}
+            style={styles.logo}
+          />
+        </View>
+        <TouchableOpacity style={styles.notification}>
+          <Ionicons name="notifications" size={30} color="#5D708A" />
+          <View style={styles.notificationBadge}>
+            <Text style={styles.badgeText}>2</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
     <View style={styles.screen}>
+
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Insígnias</Text>
+                    <Text style={styles.pageTitle}>Insígnias</Text>
 
         <View style={styles.progressCard}>
           <Text style={styles.progressLabel}>Progresso de Insígnias</Text>
@@ -56,5 +74,6 @@ export default function Insignias() {
         </View>
       </ScrollView>
     </View>
+  </View>
   );
 }

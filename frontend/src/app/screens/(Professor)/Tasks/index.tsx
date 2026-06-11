@@ -13,8 +13,8 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Input } from "../../../../components/Input/input";
-import { Button } from "../../../../components/Button/button";
+import { Input } from "../../../../components/input/input";
+import { Button } from "../../../../components/button/button";
 import { ScreenLoader } from "../../../../components/Loading/loader";
 import { styles } from "../../../../styles/CreateTasks";
 

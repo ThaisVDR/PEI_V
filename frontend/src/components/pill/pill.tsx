@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e8edf2',
   },
   pillActive: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#0079C7',
   },
   text: {
     color: '#555',

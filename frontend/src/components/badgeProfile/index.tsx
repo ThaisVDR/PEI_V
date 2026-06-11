@@ -106,14 +106,15 @@ const styles = StyleSheet.create({
     borderColor: "#1E2D47",
     opacity: 0.6,
   },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: "#1C2D50",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+iconContainer: {
+  width: 44,
+  height: 44,
+  borderRadius: 22,
+  overflow: "hidden",   
+  backgroundColor: "#1C2D50",
+  alignItems: "center",
+  justifyContent: "center",
+},
   iconContainerBloqueado: {
     backgroundColor: "#161E2E",
   },

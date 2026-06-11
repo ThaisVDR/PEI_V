@@ -31,7 +31,6 @@ function extrairDadosDoToken(token: string) {
     const partes = token.split(".");
     if (partes.length !== 3) return null;
 
-    // Decodifica a parte do Payload usando codificação universal
     const base64Url = partes[1].replace(/-/g, "+").replace(/_/g, "/");
     const caracteres =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

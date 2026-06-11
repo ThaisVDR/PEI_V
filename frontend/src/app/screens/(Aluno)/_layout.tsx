@@ -5,6 +5,7 @@ import { styleScreen, COLORS } from "../../../styles/BottomTab";
 
 export default function AlunoLayout() {
   return (
+    
     <Tabs
       screenOptions={{
         headerShown: false,

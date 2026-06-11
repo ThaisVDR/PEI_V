@@ -1,14 +1,70 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  
+    container: {
+    flex: 1,
+    backgroundColor: "#050E1D",
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255, 255, 255, 0.26)",
+  },
+  logoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  logo: {
+    width: 100,
+    height: 80,
+  },
+    pageTitle: {
+    color: "#FFF",
+    fontSize: 28,
+    fontWeight: "800",
+    marginTop: 20,
+    marginBottom: 30,
+    paddingHorizontal: 16,
+  },
+  notification: {
+    position: "relative",
+    width: 50,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  notificationBadge: {
+    position: "absolute",
+    top: -4,
+    right: 2,
+    backgroundColor: "#ff4757",
+    borderRadius: 8,
+    width: 20,
+    height: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 11,
+    fontWeight: "bold",
+  },
+ 
   screen: {
     flex: 1,
     backgroundColor: '#0d1424',
   },
-  content: {
+ content: {
     paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 140,
+    paddingTop: 16,
+    paddingBottom: 32,
   },
   title: {
     color: '#fff',
