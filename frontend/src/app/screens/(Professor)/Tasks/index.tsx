@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  StyleSheet,
+  Image,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -34,27 +34,28 @@ export default function CreateTask() {
         type: "application/pdf",
         multiple: true,
       });
-
       if (!result.canceled) {
-        setArquivos([...arquivos, ...result.assets]);
+        setArquivos((prev) => [...prev, ...result.assets]);
       }
-    } catch (error) {
+    } catch {
       Alert.alert("Erro", "Não foi possível carregar os documentos.");
     }
   };
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
+  const handleRemoverArquivo = (index: number) => {
+    setArquivos((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDateChange = (_: any, selectedDate?: Date) => {
     setShowDatePicker(false);
-    if (selectedDate) {
-      setDataEntrega(selectedDate);
-    }
+    if (selectedDate) setDataEntrega(selectedDate);
   };
 
   const handleSalvarTarefa = async () => {
-    if (!titulo || !objetivo || !dataEntrega) {
+    if (!titulo.trim() || !objetivo.trim() || !dataEntrega) {
       Alert.alert(
         "Campos obrigatórios",
-        "Por favor, preencha o título, objetivo e data de entrega.",
+        "Preencha o título, objetivo e data de entrega."
       );
       return;
     }
@@ -62,10 +63,12 @@ export default function CreateTask() {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      Alert.alert("Sucesso", "Nova tarefa salva com sucesso!");
+      Alert.alert("Sucesso", "Tarefa criada com sucesso!");
       router.back();
     }, 1500);
   };
+
+  const formularioValido = titulo.trim() && objetivo.trim() && dataEntrega;
 
   return (
     <KeyboardAvoidingView
@@ -73,13 +76,28 @@ export default function CreateTask() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScreenLoader visible={loading} message="Salvando tarefa no diário..." />
+      <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require("../../../../../assets/icon_questio.png")}
+            style={styles.logo}
+          />
+        </View>
+        <TouchableOpacity style={styles.notification}>
+          <Ionicons name="notifications" size={30} color="#5D708A" />
+          <View style={styles.notificationBadge}>
+            <Text style={styles.badgeText}>2</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
 
       <ScrollView
-        style={styles.container}
+        style={{ flex: 1, backgroundColor: "#050E1D" }}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.header}>
+        <View style={styles.pageTitleRow}>
           <Text style={styles.headerTitle}>Criar Nova Tarefa</Text>
         </View>
 
@@ -103,7 +121,10 @@ export default function CreateTask() {
               value={objetivo}
               onChangeText={setObjetivo}
             />
-            <Text style={styles.charCounter}>{objetivo.length} caracteres</Text>
+            <Text style={styles.charCounter}>
+              {objetivo.length}
+              <Text style={styles.charCounterMax}>/500</Text>
+            </Text>
           </View>
 
           <View style={styles.uploadContainer}>
@@ -111,30 +132,44 @@ export default function CreateTask() {
             <TouchableOpacity
               style={styles.uploadBox}
               onPress={handlePickDocument}
+              activeOpacity={0.7}
             >
-              <Feather name="upload-cloud" size={32} color="#475569" />
-              <Text style={styles.uploadTitle}>Clique para adicionar PDFs</Text>
+              <View style={styles.uploadIconCircle}>
+                <Feather name="upload-cloud" size={26} color="#00D2B4" />
+              </View>
+              <Text style={styles.uploadTitle}>Adicionar PDFs</Text>
               <Text style={styles.uploadSubtitle}>
-                Você pode adicionar múltiplos PDFs
+                Toque para selecionar um ou mais arquivos
               </Text>
             </TouchableOpacity>
           </View>
 
           {arquivos.length > 0 && (
             <View style={styles.filesList}>
+              <Text style={styles.filesListLabel}>
+                {arquivos.length} arquivo{arquivos.length > 1 ? "s" : ""} selecionado{arquivos.length > 1 ? "s" : ""}
+              </Text>
               {arquivos.map((file, idx) => (
                 <View key={idx} style={styles.fileItem}>
-                  <Feather name="file-text" size={16} color="#00d2b4" />
+                  <View style={styles.fileIconWrap}>
+                    <Feather name="file-text" size={15} color="#00D2B4" />
+                  </View>
                   <Text style={styles.fileName} numberOfLines={1}>
                     {file.name}
                   </Text>
+                  <TouchableOpacity
+                    onPress={() => handleRemoverArquivo(idx)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Feather name="x" size={15} color="#FF6B6B" />
+                  </TouchableOpacity>
                 </View>
               ))}
             </View>
           )}
 
           <TouchableOpacity
-            activeOpacity={1}
+            activeOpacity={0.8}
             onPress={() => setShowDatePicker(true)}
           >
             <View pointerEvents="none">
@@ -142,11 +177,9 @@ export default function CreateTask() {
                 label="Data de Entrega"
                 iconName="calendar"
                 placeholder="dd/mm/aaaa"
-                value={
-                  dataEntrega ? dataEntrega.toLocaleDateString("pt-BR") : ""
-                }
+                value={dataEntrega ? dataEntrega.toLocaleDateString("pt-BR") : ""}
                 rightElement={
-                  <Feather name="chevron-down" size={18} color="#555" />
+                  <Feather name="chevron-down" size={18} color="#5D708A" />
                 }
               />
             </View>
@@ -165,7 +198,7 @@ export default function CreateTask() {
           <Button
             title="Salvar Tarefa"
             onPress={handleSalvarTarefa}
-            disabled={loading}
+            disabled={loading || !formularioValido}
           />
         </View>
       </ScrollView>

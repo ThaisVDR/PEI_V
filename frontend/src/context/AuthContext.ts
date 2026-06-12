@@ -99,7 +99,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const decoded = extrairDadosDoToken(data.token);
 
-    // Mapeia os dados usando o Token real decodificado
     const dadosUsuario: UsuarioLogado = {
       idUsuario:
         data.idUsuario ||
