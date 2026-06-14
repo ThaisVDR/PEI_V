@@ -14,8 +14,8 @@ import {
   Image,
 } from "react-native";
 
-import { Button } from "../../../../components/button/button";
-import { Input } from "../../../../components/input/input";
+import { Button } from "../../../../components/Button/button";
+import { Input } from "../../../../components/Input/input";
 import { styles } from "../../../../styles/Login";
 import { ScreenLoader } from "../../../../components/Loading/loader";
 
@@ -124,7 +124,11 @@ export default function Login() {
             />
 
             <View style={styles.footerLinks}>
-              <TouchableOpacity onPress={() => console.log("Recuperar senha")}>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push("/screens/(Authenticator)/ForgotPassWord")
+                }
+              >
                 <Text style={styles.linkText}>Esqueci minha senha</Text>
               </TouchableOpacity>
 

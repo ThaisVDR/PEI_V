@@ -7,6 +7,8 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="screens/(Authenticator)/Login/index" />
         <Stack.Screen name="screens/(Authenticator)/Register/index" />
+        <Stack.Screen name="screens/(Authenticator)/ForgotPassWord/index" />
+        <Stack.Screen name="screens/(Authenticator)/ResetPassWord/index" />
         <Stack.Screen name="screens/(Aluno)" />
         <Stack.Screen name="screens/(Professor)" />
         <Stack.Screen name="screens/(Coordenador)" />

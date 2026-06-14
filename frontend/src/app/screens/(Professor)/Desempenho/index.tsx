@@ -14,7 +14,6 @@ import { styles } from "../../../../styles/Desempenho";
 import { useAuth } from "../../../../context/AuthContext";
 import api from "../../../../services/api";
 
-// ─── Tipos ────────────────────────────────────────────────────────────────────
 
 interface TarefaPendente {
   id: string;
@@ -43,7 +42,6 @@ interface Turma {
   nome: string;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function notaColor(nota: number | null): string {
   if (nota === null) return "#5D708A";
@@ -57,7 +55,6 @@ function conclusaoPercent(aluno: AlunoDesempenho): number {
   return Math.round((aluno.tarefasConcluidas / aluno.tarefasTotal) * 100);
 }
 
-// ─── Componente ───────────────────────────────────────────────────────────────
 
 export default function Desempenho() {
   const { user } = useAuth();
@@ -107,7 +104,6 @@ export default function Desempenho() {
     fetchAlunos();
   }, [turmaSelecionada, user?.token]);
 
-  // ── Métricas ──
   const mediaGeral = (() => {
     const comNota = alunos.filter((a) => a.mediaNotas !== null);
     if (comNota.length === 0) return null;
@@ -119,7 +115,6 @@ export default function Desempenho() {
       ? 0
       : Math.round(alunos.reduce((acc, a) => acc + conclusaoPercent(a), 0) / alunos.length);
 
-  // ── Distribuição ──
   const faixas = [
     { label: "90-100", min: 90, max: 100, color: "#00D2B4" },
     { label: "80-89",  min: 80, max: 89,  color: "#4D9EFF" },
@@ -134,7 +129,6 @@ export default function Desempenho() {
 
   const maxFaixaCount = Math.max(...faixas.map((f) => countFaixa(f.min, f.max)), 1);
 
-  // ── Avaliação IA ──
   function abrirModal(aluno: AlunoDesempenho, tarefa: TarefaPendente) {
     setAlunoSelecionado(aluno);
     setTarefaSelecionada(tarefa);
@@ -221,7 +215,6 @@ Avalie e retorne APENAS um JSON válido, sem texto extra e sem markdown:
         </TouchableOpacity>
       </View>
 
-      {/* Tabs de turma */}
       {turmas.length > 0 && (
         <ScrollView
           horizontal

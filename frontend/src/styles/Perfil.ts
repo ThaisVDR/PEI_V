@@ -48,12 +48,12 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-content: {
-  flexGrow: 1,
-  paddingHorizontal: 20,
-  paddingTop: 16,
-  paddingBottom: 80, 
-},
+  content: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingTop: -15,
+    paddingBottom: 80,
+  },
 
   centered: {
     flex: 1,

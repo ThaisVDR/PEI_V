@@ -11,6 +11,7 @@ export const styles = StyleSheet.create({
     paddingBottom: 48,
   },
 
+  // ─── Header ───────────────────────────────────────────────────────────────
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -54,11 +55,12 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
+  // ─── Título da página ──────────────────────────────────────────────────────
   pageTitleRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    marginBottom: 24,
+    marginBottom: 6,
     marginTop: 4,
   },
   backButton: {
@@ -77,10 +79,10 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
+  // ─── Formulário ───────────────────────────────────────────────────────────
   form: {
     gap: 4,
   },
-
   textAreaContainer: {
     position: "relative",
   },
@@ -88,15 +90,16 @@ export const styles = StyleSheet.create({
     color: "#5D708A",
     fontSize: 12,
     textAlign: "right",
-    marginTop: -10,
+    marginTop: -18,
     marginBottom: 20,
   },
   charCounterMax: {
     color: "#2A4070",
   },
 
+  // ─── Upload ───────────────────────────────────────────────────────────────
   uploadContainer: {
-    marginBottom: 16,
+    marginBottom: 5,
   },
   uploadLabel: {
     color: "#7a869a",
@@ -135,6 +138,7 @@ export const styles = StyleSheet.create({
     fontSize: 12,
   },
 
+  // ─── Lista de arquivos ────────────────────────────────────────────────────
   filesList: {
     backgroundColor: "rgba(255,255,255,0.02)",
     borderRadius: 12,
@@ -172,5 +176,98 @@ export const styles = StyleSheet.create({
     color: "#8DA6C8",
     fontSize: 13,
     flex: 1,
+  },
+
+  // ─── Modal de turma ───────────────────────────────────────────────────────
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "flex-end",
+  },
+  modalSheet: {
+    backgroundColor: "#0D1B2E",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    maxHeight: "60%",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  modalTitulo: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  modalItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    marginBottom: 6,
+    backgroundColor: "#0A1628",
+  },
+  modalItemSelecionado: {
+    backgroundColor: "rgba(0,210,180,0.1)",
+    borderWidth: 1,
+    borderColor: "#00D2B4",
+  },
+  modalItemTexto: {
+    flex: 1,
+    color: "#A0AEC0",
+    fontSize: 14,
+  },
+  modalItemTextoSelecionado: {
+    color: "#00D2B4",
+    fontWeight: "600",
+  },
+  modalEmpty: {
+    alignItems: "center",
+    paddingVertical: 32,
+    gap: 12,
+  },
+  modalEmptyText: {
+    color: "#5D708A",
+    fontSize: 14,
+    textAlign: "center",
+    lineHeight: 22,
+  },
+  modalContent: {
+    backgroundColor: "#101D33",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: 0.7, // No máximo 70% da altura da tela
+    paddingBottom: 30,
+    borderTopWidth: 1,
+    borderColor: "rgba(22, 199, 231, 0.15)",
+  },
+  modalTitle: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  turmaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255, 255, 255, 0.03)",
+  },
+  turmaItemText: {
+    color: "#FFF",
+    fontSize: 15,
+    fontWeight: "500",
+  },
+  emptyText: {
+    color: "#7c8db5",
+    fontSize: 14,
+    textAlign: "center",
+    marginVertical: 40,
   },
 });

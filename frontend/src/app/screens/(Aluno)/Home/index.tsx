@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Image,
   Alert,
@@ -12,51 +11,74 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import StreakCard from "../../../../components/Streak/streakCard";
 import { useTarefas } from "../../../../hooks/useTasks";
-import {styles} from "../../../../styles/HomeAluno";
+import api from "../../../../services/api"; // Usando sua instância padrão do Axios
+import { styles } from "../../../../styles/HomeAluno";
 
 export default function Home() {
   const router = useRouter();
-  const [userData, setUserData] = useState({ streakAtual: 0 });
-  const userId = "MUDE_PELO_UUID_DO_USUARIO_LOGADO";
+
+  // Estado expandido para guardar o objeto completo do usuário que vem do banco
+  const [userData, setUserData] = useState({
+    streakAtual: 0,
+    maiorStreak: 0,
+    ultimoCheckinEm: null,
+    nivel: 1,
+    xpTotal: 0,
+  });
 
   const {
     tarefasPendentes,
     totalTarefas,
     totalConcluidas,
     progressoSemanal,
-    concluirTarefa,
     carregarTarefas,
   } = useTarefas();
 
+  // Função automática executada assim que o aluno abre o app
+  const executarCheckinDiario = async () => {
+    try {
+      // Bate no endpoint de gamificação usando a estrutura unificada do Axios
+      // NOTA: Se o seu endpoint exigir o ID na URL (ex: /gamification/checkin/${userId}), basta ajustar abaixo
+      const response = await api.post("/gamification/checkin");
+
+      if (response.data) {
+        setUserData(response.data);
+        console.log(
+          "=== OFENSIVA DUOLINGO ATUALIZADA POR ACESSO ===",
+          response.data.streakAtual,
+        );
+      }
+    } catch (error: any) {
+      console.error(
+        "Erro na validação automática do streak:",
+        error?.response?.data || error,
+      );
+      // Erro silencioso no console para não quebrar a usabilidade caso o servidor caia
+    }
+  };
+
   useEffect(() => {
+    // 1. Carrega as tarefas normais do hook
     carregarTarefas();
+    // 2. Garante o dia do aluno acendendo o fogo da ofensiva por presença
+    executarCheckinDiario();
   }, []);
 
-  const handleCompletarQuestao = async () => {
-    try {
-      const response = await fetch(
-        `http://192.168.18.68:8080/auth/streak/${userId}?novosPontos=150`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const data = await response.json();
-      if (response.ok) {
-        setUserData({ streakAtual: data.streakAtual });
-        Alert.alert("Parabéns!", "Questão respondida! Sua ofensiva foi atualizada.");
-      } else {
-        Alert.alert("Erro", data.mensagem || "Erro ao atualizar os dados.");
-      }
-    } catch (error) {
-      Alert.alert("Erro de Conexão", "Não foi possível conectar ao servidor.");
-    }
+  // Validação para o StreakCard: Compara se o último check-in salvo no banco foi feito HOJE
+  const verificarCheckinHoje = () => {
+    if (!userData.ultimoCheckinEm) return false;
+
+    const dataUltimoCheckin = new Date(userData.ultimoCheckinEm).toDateString();
+    const dataHoje = new Date().toDateString();
+
+    return dataUltimoCheckin === dataHoje;
   };
 
   const tarefasHome = tarefasPendentes.slice(0, 3);
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* Header */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image
@@ -72,32 +94,39 @@ export default function Home() {
         </TouchableOpacity>
       </View>
 
+      {/* Conteúdo Principal */}
       <View style={styles.content}>
-        <StreakCard streak={userData.streakAtual} />
+        {/* Card do Duolingo Integrado Dinamicamente */}
 
+        <StreakCard
+          streak={userData.streakAtual}
+          maiorStreak={userData.maiorStreak}
+          checkinHoje={verificarCheckinHoje()}
+        />
+
+        {/* Progresso Semanal */}
         <View style={styles.section}>
           <View style={styles.card}>
-                <Text style={styles.sectionTitle}>Progresso Semanal</Text>
-
-          <View style={styles.progressBarTrack}>
-            <View
-              style={[
-                styles.progressBarFill,
-                { width: `${Math.round(progressoSemanal * 100)}%` },
-              ]}
-            />
+            <Text style={styles.sectionTitle}>Progresso Semanal</Text>
+            <View style={styles.progressBarTrack}>
+              <View
+                style={[
+                  styles.progressBarFill,
+                  { width: `${Math.round(progressoSemanal * 100)}%` },
+                ]}
+              />
+            </View>
+            <Text style={styles.progressLabel}>
+              {totalConcluidas}/{totalTarefas} tarefas concluídas
+            </Text>
           </View>
-          <Text style={styles.progressLabel}>
-            {totalConcluidas}/{totalTarefas} tarefas concluídas
-          </Text>
-          </View>
-      
         </View>
 
+        {/* Tarefas Pendentes */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Tarefas Pendentes</Text>
-           <TouchableOpacity onPress={() => router.push("../Tasks/index")}>
+            <TouchableOpacity onPress={() => router.push("../Tasks/index")}>
               <Text style={styles.verTodas}>Ver todas →</Text>
             </TouchableOpacity>
           </View>
@@ -110,17 +139,18 @@ export default function Home() {
                 key={tarefa.id ?? index}
                 style={styles.tarefaCard}
                 activeOpacity={0.8}
-                onPress={() => tarefa.id != null && concluirTarefa(String(tarefa.id))}
+                onPress={() => {
+                  // Aqui você pode manter sua lógica de abrir ou concluir a tarefa
+                  if (tarefa.id != null) {
+                    router.push(`../Tasks/${tarefa.id}`);
+                  }
+                }}
               >
-                {/* Checkbox */}
                 <View style={styles.checkbox} />
-
-                {/* Conteúdo */}
                 <View style={styles.tarefaContent}>
                   <Text style={styles.tarefaTitulo} numberOfLines={2}>
                     {tarefa.titulo}
                   </Text>
-
                   <View style={styles.tarefaMeta}>
                     {tarefa.categoria && (
                       <View style={styles.categoriaBadge}>
@@ -129,11 +159,11 @@ export default function Home() {
                         </Text>
                       </View>
                     )}
-                    <Text style={styles.atrasadaText}>Atrasada!</Text>
+                    <Text style={styles.atrasadaText}>Pendente</Text>
                   </View>
                 </View>
                 {tarefa.pontos && (
-                  <Text style={styles.pontos}>+{tarefa.pontos}</Text>
+                  <Text style={styles.pontos}>+{tarefa.pontos} XP</Text>
                 )}
               </TouchableOpacity>
             ))
@@ -143,4 +173,3 @@ export default function Home() {
     </ScrollView>
   );
 }
-
