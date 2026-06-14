@@ -1,30 +1,28 @@
 import axios from "axios";
-import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const API_URL = "https://questio-backend.onrender.com/api";
+export const API_URL = "http://192.168.18.68:8080/api";
 
 const api = axios.create({
   baseURL: API_URL,
 });
 
-// Interceptor para injetar o Token JWT automaticamente em todas as requisições
 api.interceptors.request.use(
   async (config) => {
     try {
-      // Busca o token salvo no SecureStore (substitua 'token' pela chave que você usou no login)
-      const token = await SecureStore.getItemAsync("token");
-
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+      const storedUser = await AsyncStorage.getItem("@Questio:user");
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        if (user?.token) {
+          config.headers.Authorization = `Bearer ${user.token}`;
+        }
       }
     } catch (error) {
-      console.error("Erro ao buscar o token no SecureStore", error);
+      console.error("Erro ao buscar o token", error);
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
 export default api;

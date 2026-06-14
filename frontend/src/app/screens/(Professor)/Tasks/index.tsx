@@ -8,58 +8,36 @@ import {
   Platform,
   Alert,
   Image,
-  Modal,
-  FlatList,
   ActivityIndicator,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Input } from "../../../../components/Input/input";
-import { Button } from "../../../../components/Button/button";
 import { ScreenLoader } from "../../../../components/Loading/loader";
 import { styles } from "../../../../styles/CreateTasks";
 import api from "../../../../services/api";
 
-// ─── Tipos (Ajustado para suportar o retorno da Grade) ─────────────────────────
 interface Turma {
-  idClass: string; // Mantido para o POST de tarefas
+  idClass: string;
   nome: string;
-}
-
-const BASE_URL = "http://10.0.2.2:8080";
-
-async function getAuthHeaders(): Promise<Record<string, string>> {
-  const token = await AsyncStorage.getItem("@questio:token");
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
 }
 
 export default function CreateTask() {
   const router = useRouter();
 
-  // Campos do formulário
   const [titulo, setTitulo] = useState("");
   const [objetivo, setObjetivo] = useState("");
   const [pontos, setPontos] = useState("");
   const [arquivos, setArquivos] = useState<any[]>([]);
   const [dataEntrega, setDataEntrega] = useState<Date | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-
-  // Turma selecionada
   const [turmas, setTurmas] = useState<Turma[]>([]);
   const [turmaSelecionada, setTurmaSelecionada] = useState<Turma | null>(null);
-  const [showTurmaModal, setShowTurmaModal] = useState(false);
   const [loadingTurmas, setLoadingTurmas] = useState(true);
-
-  // Estado geral
   const [loading, setLoading] = useState(false);
 
-  // ── Buscar turmas do professor ao montar ──────────────────────────────────
   useEffect(() => {
     buscarTurmas();
   }, []);
@@ -67,27 +45,15 @@ export default function CreateTask() {
   const buscarTurmas = async () => {
     try {
       setLoadingTurmas(true);
-
-      // Usando a mesma instância de API da Grade, sem o prefixo '/api' que pode estar errado
-      const res = await api.get("/coordenacao/turmas", {
-        headers: {
-          Authorization: `Bearer ${await AsyncStorage.getItem("@questio:token")}`,
-        },
-      });
-
-      // No Axios, os dados já vêm mastigados dentro de .data
+      const res = await api.get("/coordenacao/turmas");
       if (res.data) {
-        console.log("=== TURMAS RECEBIDAS COM AXIOS ===", res.data);
-
         const turmasNormalizadas: Turma[] = res.data.map((item: any) => ({
-          idClass: item.idClass || item.idTurma,
+          idClass: item.idTurma || item.idClass,
           nome: item.nome,
         }));
-
         setTurmas(turmasNormalizadas);
       }
     } catch (e: any) {
-      console.error("Erro ao buscar turmas com Axios:", e?.response?.data || e);
       Alert.alert("Erro", "Não foi possível carregar as turmas.");
     } finally {
       setLoadingTurmas(false);
@@ -128,36 +94,27 @@ export default function CreateTask() {
       return;
     }
 
-    const pontosNum = parseInt(pontos, 10);
-    const prazoISO = dataEntrega.toISOString().slice(0, 19);
-
     const body = {
       titulo: titulo.trim(),
       descricao: objetivo.trim(),
-      prazo: prazoISO,
-      pontos: pontosNum,
+      prazo: dataEntrega.toISOString().slice(0, 19),
+      pontos: parseInt(pontos, 10) || 0,
       idClass: turmaSelecionada.idClass,
     };
 
     try {
       setLoading(true);
-
-      // Ajuste a rota se o seu backend de tarefas não usar o prefixo '/api'
-      const res = await api.post("/tarefas/criar", body, {
-        headers: {
-          Authorization: `Bearer ${await AsyncStorage.getItem("@questio:token")}`,
-        },
-      });
-
+      const res = await api.post("/tarefas/criar", body);
       if (res.status === 201 || res.status === 200) {
         Alert.alert("Sucesso", "Tarefa criada com sucesso!", [
           { text: "OK", onPress: () => router.back() },
         ]);
       }
     } catch (e: any) {
-      console.error("Erro ao criar tarefa:", e?.response?.data || e);
-      const msg = e.response?.data?.message || "Erro ao criar a tarefa.";
-      Alert.alert("Erro", msg);
+      Alert.alert(
+        "Erro",
+        e.response?.data?.message || "Erro ao criar a tarefa.",
+      );
     } finally {
       setLoading(false);
     }
@@ -203,24 +160,6 @@ export default function CreateTask() {
             value={titulo}
             onChangeText={setTitulo}
           />
-
-          <View style={styles.textAreaContainer}>
-            <Input
-              label="Objetivo da Tarefa"
-              iconName="align-left"
-              placeholder="Descreva o que os alunos devem fazer..."
-              multiline
-              numberOfLines={4}
-              maxLength={500}
-              value={objetivo}
-              onChangeText={setObjetivo}
-            />
-            <Text style={styles.charCounter}>
-              {objetivo.length}
-              <Text style={styles.charCounterMax}>/500</Text>
-            </Text>
-          </View>
-
           <Input
             label="Pontos (XP)"
             iconName="award"
@@ -229,63 +168,24 @@ export default function CreateTask() {
             onChangeText={(t) => setPontos(t.replace(/[^0-9]/g, ""))}
             keyboardType="numeric"
           />
-
-          {/* Input de Selecionar Turma (Abre o Modal) */}
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => setShowTurmaModal(true)}
-          >
-            <View pointerEvents="none">
-              <Input
-                label="Turma"
-                iconName="users"
-                placeholder={
-                  loadingTurmas ? "Carregando turmas..." : "Selecione uma turma"
-                }
-                value={turmaSelecionada?.nome ?? ""}
-                rightElement={
-                  loadingTurmas ? (
-                    <ActivityIndicator size="small" color="#00D2B4" />
-                  ) : (
-                    <Feather name="chevron-down" size={18} color="#5D708A" />
-                  )
-                }
-              />
-            </View>
-          </TouchableOpacity>
-
-          {/* Selecionar Data de Entrega */}
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => setShowDatePicker(true)}
-            style={{ marginTop: 15 }}
-          >
-            <View pointerEvents="none">
-              <Input
-                label="Prazo de Entrega"
-                iconName="calendar"
-                placeholder="Selecione a data limite"
-                value={
-                  dataEntrega ? dataEntrega.toLocaleDateString("pt-BR") : ""
-                }
-                rightElement={
-                  <Feather name="clock" size={18} color="#5D708A" />
-                }
-              />
-            </View>
-          </TouchableOpacity>
-
-          {showDatePicker && (
-            <DateTimePicker
-              value={dataEntrega || new Date()}
-              mode="date"
-              display="default"
-              minimumDate={new Date()}
-              onChange={handleDateChange}
+          <View style={styles.textAreaContainer}>
+            <Input
+              label="Objetivo da Tarefa"
+              iconName="align-left"
+              placeholder="Descreva o que os alunos devem fazer, o que será avaliado e critérios de sucesso..."
+              multiline
+              numberOfLines={4}
+              maxLength={500}
+              value={objetivo}
+              onChangeText={setObjetivo}
             />
-          )}
+            <Text style={styles.charCounter}>
+              {objetivo.length}
+              <Text style={styles.charCounterMax}> caracteres</Text>
+            </Text>
+          </View>
 
-          {/* Upload de arquivos */}
+          {/* Upload de PDFs */}
           <View style={styles.uploadContainer}>
             <Text style={styles.uploadLabel}>Materiais (PDFs)</Text>
             <TouchableOpacity
@@ -294,16 +194,15 @@ export default function CreateTask() {
               activeOpacity={0.7}
             >
               <View style={styles.uploadIconCircle}>
-                <Feather name="upload-cloud" size={26} color="#00D2B4" />
+                <Feather name="upload-cloud" size={26} color="#5D708A" />
               </View>
-              <Text style={styles.uploadTitle}>Adicionar PDFs</Text>
+              <Text style={styles.uploadTitle}>Clique para adicionar PDFs</Text>
               <Text style={styles.uploadSubtitle}>
-                Toque para selecionar arquivos
+                Você pode adicionar múltiplos PDFs
               </Text>
             </TouchableOpacity>
           </View>
 
-          {/* Listagem de Arquivos Selecionados */}
           {arquivos.map((file, idx) => (
             <View key={idx} style={styles.fileItem}>
               <Feather name="file-text" size={20} color="#00D2B4" />
@@ -316,77 +215,90 @@ export default function CreateTask() {
             </View>
           ))}
 
-          {/* Botão Salvar Final */}
-          <Button
-            title="Salvar Tarefa no Diário"
+          {/* Data de Entrega */}
+          <Text style={styles.uploadLabel}>Data de Entrega</Text>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => setShowDatePicker(true)}
+            style={styles.dateButton}
+          >
+            <Text
+              style={dataEntrega ? styles.dateText : styles.datePlaceholder}
+            >
+              {dataEntrega
+                ? dataEntrega.toLocaleDateString("pt-BR")
+                : "dd/mm/aaaa"}
+            </Text>
+            <Feather name="calendar" size={18} color="#5D708A" />
+          </TouchableOpacity>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={dataEntrega || new Date()}
+              mode="date"
+              display="default"
+              minimumDate={new Date()}
+              onChange={handleDateChange}
+            />
+          )}
+
+          {/* Turmas inline */}
+          <Text style={styles.turmasLabel}>Enviar para Turmas</Text>
+
+          {loadingTurmas ? (
+            <ActivityIndicator
+              size="small"
+              color="#16C7E7"
+              style={{ marginVertical: 20 }}
+            />
+          ) : turmas.length === 0 ? (
+            <Text style={styles.emptyText}>Nenhuma turma cadastrada.</Text>
+          ) : (
+            turmas.map((item) => {
+              const selecionada = turmaSelecionada?.idClass === item.idClass;
+              return (
+                <TouchableOpacity
+                  key={item.idClass}
+                  style={[
+                    styles.turmaItem,
+                    selecionada && styles.turmaItemSelecionado,
+                  ]}
+                  onPress={() => setTurmaSelecionada(item)}
+                  activeOpacity={0.8}
+                >
+                  <View
+                    style={[
+                      styles.turmaRadio,
+                      selecionada && styles.turmaRadioSelecionado,
+                    ]}
+                  >
+                    {selecionada && <View style={styles.turmaRadioDot} />}
+                  </View>
+                  <View style={styles.turmaItemContent}>
+                    <Text style={styles.turmaItemText}>{item.nome}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })
+          )}
+
+          {/* Botão Enviar */}
+          <TouchableOpacity
+            style={[
+              styles.btnEnviar,
+              (!titulo || !objetivo || !turmaSelecionada || !dataEntrega) && {
+                opacity: 0.5,
+              },
+            ]}
             onPress={handleSalvarTarefa}
             disabled={!titulo || !objetivo || !turmaSelecionada || !dataEntrega}
-            style={{ marginTop: 25, marginBottom: 40 }}
-          />
+            activeOpacity={0.8}
+          >
+            <Feather name="send" size={18} color="#050E1D" />
+            <Text style={styles.btnEnviarText}>Enviar Tarefa</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
-
-      {/* ─── MODAL DE SELEÇÃO DE TURMAS ──────────────────────────────────────── */}
-      <Modal
-        visible={showTurmaModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowTurmaModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Selecione a Turma</Text>
-              <TouchableOpacity onPress={() => setShowTurmaModal(false)}>
-                <Feather name="x" size={24} color="#FFF" />
-              </TouchableOpacity>
-            </View>
-
-            {loadingTurmas ? (
-              <ActivityIndicator
-                size="large"
-                color="#00D2B4"
-                style={{ margin: 50 }}
-              />
-            ) : (
-              <FlatList
-                data={turmas}
-                keyExtractor={(item) => item.idClass}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={styles.turmaItem}
-                    onPress={() => {
-                      setTurmaSelecionada(item);
-                      setShowTurmaModal(false);
-                    }}
-                  >
-                    <Feather
-                      name="users"
-                      size={18}
-                      color="#00D2B4"
-                      style={{ marginRight: 12 }}
-                    />
-                    <Text style={styles.turmaItemText}>{item.nome}</Text>
-                    {turmaSelecionada?.idClass === item.idClass && (
-                      <Feather
-                        name="check"
-                        size={18}
-                        color="#00D2B4"
-                        style={{ marginLeft: "auto" }}
-                      />
-                    )}
-                  </TouchableOpacity>
-                )}
-                ListEmptyComponent={
-                  <Text style={styles.emptyText}>
-                    Nenhuma turma cadastrada encontrada.
-                  </Text>
-                }
-              />
-            )}
-          </View>
-        </View>
-      </Modal>
     </KeyboardAvoidingView>
   );
 }

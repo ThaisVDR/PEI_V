@@ -19,7 +19,16 @@ export function useTarefas() {
     try {
       setLoading(true);
       const { data } = await api.get("/tarefas");
-      setTarefas(data);
+      const tarefasMapeadas: Tarefa[] = data.map((item: any) => ({
+        id: item.id,
+        titulo: item.titulo,
+        objetivo: item.objetivo || item.descricao,
+        dataEntrega: item.dataEntrega || item.prazo,
+        concluida: item.concluida,
+        pontos: item.pontos,
+        categoria: item.categoria,
+      }));
+      setTarefas(tarefasMapeadas);
     } catch (error: any) {
       console.log(error?.response?.data || error);
     } finally {
@@ -32,8 +41,10 @@ export function useTarefas() {
       await api.patch(`/tarefas/${id}/concluir`);
       setTarefas((prev) =>
         prev.map((tarefa) =>
-          tarefa.id === id ? { ...tarefa, concluida: !tarefa.concluida } : tarefa
-        )
+          tarefa.id === id
+            ? { ...tarefa, concluida: !tarefa.concluida }
+            : tarefa,
+        ),
       );
     } catch (error: any) {
       console.log(error?.response?.data || error);
@@ -48,7 +59,8 @@ export function useTarefas() {
   const tarefasConcluidas = tarefas.filter((t) => t.concluida);
   const totalTarefas = tarefas.length;
   const totalConcluidas = tarefasConcluidas.length;
-  const progressoSemanal = totalTarefas > 0 ? totalConcluidas / totalTarefas : 0;
+  const progressoSemanal =
+    totalTarefas > 0 ? totalConcluidas / totalTarefas : 0;
 
   return {
     tarefas,

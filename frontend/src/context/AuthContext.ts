@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useEffect,
-  ReactNode,
-} from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useState, useContext, ReactNode } from "react";
 import { API_URL } from "../services/api";
 
 export interface UsuarioLogado {
@@ -66,23 +59,7 @@ function extrairDadosDoToken(token: string) {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UsuarioLogado | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function carregarSessao() {
-      try {
-        const storedUser = await AsyncStorage.getItem("@Questio:user");
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
-      } catch (e) {
-        console.error("Erro ao carregar dados locais", e);
-      } finally {
-        setLoading(false);
-      }
-    }
-    carregarSessao();
-  }, []);
+  const [loading, setLoading] = useState(false);
 
   async function login(email: string, senha: string): Promise<UsuarioLogado> {
     const response = await fetch(`${API_URL}/auth/login`, {
@@ -114,14 +91,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     setUser(dadosUsuario);
-    await AsyncStorage.setItem("@Questio:user", JSON.stringify(dadosUsuario));
-
     return dadosUsuario;
   }
 
   async function logout() {
     setUser(null);
-    await AsyncStorage.removeItem("@Questio:user");
   }
 
   return React.createElement(

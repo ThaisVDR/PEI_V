@@ -67,6 +67,12 @@ export default function CoordenadorLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="Turmas/index"
+        options={{
+          href: null, 
+        }}
+      />
     </Tabs>
   );
 }

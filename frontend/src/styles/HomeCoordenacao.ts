@@ -5,6 +5,10 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#050E1D",
   },
+  content: {
+    padding: 10,
+    paddingBottom: 100,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",

@@ -5,20 +5,27 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#050E1D",
   },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#050E1D",
+  },
+
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 10,
+    paddingBottom: -10,
+    backgroundColor: "#050E1D",
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.26)",
+    borderBottomColor: "rgba(255, 255, 255, 0.08)",
   },
   logoContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
   },
   logo: {
     width: 100,
@@ -49,33 +56,24 @@ export const styles = StyleSheet.create({
   },
 
   content: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingTop: -15,
-    paddingBottom: 80,
-  },
-
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#050E1D",
+    paddingBottom: 40,
   },
   logoutButton: {
-    backgroundColor: "#1f1b34",
-    borderColor: "#7b1b3a",
-    borderWidth: 1,
-    borderRadius: 18,
-    paddingVertical: 14,
+    marginHorizontal: 20,
+    marginTop: 28,
+    borderWidth: 1.0,
+    borderColor: "#e8445a",
+    borderRadius: 12,
+    paddingVertical: 15,
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: 8,
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: "#181220",
   },
   logoutText: {
-    color: "#ff4d6d",
-    fontSize: 14,
-    fontWeight: "700",
-  },
-  valueSmall: {
-    fontSize: 12,
+    color: "#e8445a",
+    fontSize: 15,
+    fontWeight: "600",
   },
 });

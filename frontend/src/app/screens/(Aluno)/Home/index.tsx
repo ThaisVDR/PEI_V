@@ -11,13 +11,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import StreakCard from "../../../../components/Streak/streakCard";
 import { useTarefas } from "../../../../hooks/useTasks";
-import api from "../../../../services/api"; // Usando sua instância padrão do Axios
+import api from "../../../../services/api"; 
 import { styles } from "../../../../styles/HomeAluno";
 
 export default function Home() {
   const router = useRouter();
 
-  // Estado expandido para guardar o objeto completo do usuário que vem do banco
   const [userData, setUserData] = useState({
     streakAtual: 0,
     maiorStreak: 0,
@@ -34,14 +33,15 @@ export default function Home() {
     carregarTarefas,
   } = useTarefas();
 
-  // Função automática executada assim que o aluno abre o app
   const executarCheckinDiario = async () => {
     try {
-      // Bate no endpoint de gamificação usando a estrutura unificada do Axios
-      // NOTA: Se o seu endpoint exigir o ID na URL (ex: /gamification/checkin/${userId}), basta ajustar abaixo
-      const response = await api.post("/gamification/checkin");
+      const response = await api.post("/checkin");
 
-      if (response.data) {
+      if (
+        response &&
+        response.data &&
+        typeof response.data.streakAtual !== "undefined"
+      ) {
         setUserData(response.data);
         console.log(
           "=== OFENSIVA DUOLINGO ATUALIZADA POR ACESSO ===",
@@ -49,22 +49,21 @@ export default function Home() {
         );
       }
     } catch (error: any) {
-      console.error(
-        "Erro na validação automática do streak:",
-        error?.response?.data || error,
+      const mensagemErro =
+        error?.response?.data?.message || error?.message || "Erro desconhecido";
+      const statusErro = error?.response?.status || "Sem status";
+
+      console.warn(
+        `[Streak Checkin] Falha silenciosa (${statusErro}): ${mensagemErro}`,
       );
-      // Erro silencioso no console para não quebrar a usabilidade caso o servidor caia
     }
   };
 
   useEffect(() => {
-    // 1. Carrega as tarefas normais do hook
     carregarTarefas();
-    // 2. Garante o dia do aluno acendendo o fogo da ofensiva por presença
     executarCheckinDiario();
   }, []);
 
-  // Validação para o StreakCard: Compara se o último check-in salvo no banco foi feito HOJE
   const verificarCheckinHoje = () => {
     if (!userData.ultimoCheckinEm) return false;
 
@@ -78,7 +77,6 @@ export default function Home() {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image
@@ -94,17 +92,12 @@ export default function Home() {
         </TouchableOpacity>
       </View>
 
-      {/* Conteúdo Principal */}
       <View style={styles.content}>
-        {/* Card do Duolingo Integrado Dinamicamente */}
-
         <StreakCard
           streak={userData.streakAtual}
           maiorStreak={userData.maiorStreak}
           checkinHoje={verificarCheckinHoje()}
         />
-
-        {/* Progresso Semanal */}
         <View style={styles.section}>
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>Progresso Semanal</Text>
@@ -121,8 +114,6 @@ export default function Home() {
             </Text>
           </View>
         </View>
-
-        {/* Tarefas Pendentes */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Tarefas Pendentes</Text>
@@ -140,7 +131,6 @@ export default function Home() {
                 style={styles.tarefaCard}
                 activeOpacity={0.8}
                 onPress={() => {
-                  // Aqui você pode manter sua lógica de abrir ou concluir a tarefa
                   if (tarefa.id != null) {
                     router.push(`../Tasks/${tarefa.id}`);
                   }

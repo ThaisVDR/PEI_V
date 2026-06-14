@@ -10,8 +10,6 @@ export const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 48,
   },
-
-  // ─── Header ───────────────────────────────────────────────────────────────
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -54,13 +52,11 @@ export const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "bold",
   },
-
-  // ─── Título da página ──────────────────────────────────────────────────────
   pageTitleRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    marginBottom: 6,
+    marginBottom: 20,
     marginTop: 4,
   },
   backButton: {
@@ -75,13 +71,13 @@ export const styles = StyleSheet.create({
   },
   headerTitle: {
     color: "#E8EDF8",
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "700",
   },
 
   // ─── Formulário ───────────────────────────────────────────────────────────
   form: {
-    gap: 4,
+    gap: 6,
   },
   textAreaContainer: {
     position: "relative",
@@ -89,9 +85,9 @@ export const styles = StyleSheet.create({
   charCounter: {
     color: "#5D708A",
     fontSize: 12,
-    textAlign: "right",
-    marginTop: -18,
-    marginBottom: 20,
+    textAlign: "left",
+    marginTop: 4,
+    marginBottom: 12,
   },
   charCounterMax: {
     color: "#2A4070",
@@ -99,7 +95,7 @@ export const styles = StyleSheet.create({
 
   // ─── Upload ───────────────────────────────────────────────────────────────
   uploadContainer: {
-    marginBottom: 5,
+    marginBottom: 8,
   },
   uploadLabel: {
     color: "#7a869a",
@@ -109,9 +105,9 @@ export const styles = StyleSheet.create({
   },
   uploadBox: {
     width: "100%",
-    backgroundColor: "rgba(0, 210, 180, 0.04)",
+    backgroundColor: "rgba(255,255,255,0.02)",
     borderWidth: 1.5,
-    borderColor: "rgba(0, 210, 180, 0.2)",
+    borderColor: "rgba(255,255,255,0.08)",
     borderStyle: "dashed",
     borderRadius: 14,
     paddingVertical: 28,
@@ -123,7 +119,7 @@ export const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: "rgba(0, 210, 180, 0.1)",
+    backgroundColor: "rgba(255,255,255,0.05)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 4,
@@ -178,7 +174,81 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ─── Modal de turma ───────────────────────────────────────────────────────
+  // ─── Seção de turmas (lista inline, sem modal) ────────────────────────────
+  turmasLabel: {
+    color: "#7a869a",
+    fontSize: 13,
+    fontWeight: "600",
+    marginBottom: 10,
+    marginTop: 8,
+  },
+  turmaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#0D1B2E",
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.05)",
+  },
+  turmaItemSelecionado: {
+    borderColor: "#16C7E7",
+    backgroundColor: "rgba(22, 199, 231, 0.06)",
+  },
+  turmaRadio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#3B4E6B",
+    marginRight: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  turmaRadioSelecionado: {
+    borderColor: "#16C7E7",
+  },
+  turmaRadioDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#16C7E7",
+  },
+  turmaItemContent: {
+    flex: 1,
+  },
+  turmaItemText: {
+    color: "#E8EDF8",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  turmaItemSub: {
+    color: "#5D708A",
+    fontSize: 12,
+    marginTop: 2,
+  },
+
+  // ─── Botão enviar ─────────────────────────────────────────────────────────
+  btnEnviar: {
+    flexDirection: "row",
+    backgroundColor: "#16C7E7",
+    borderRadius: 12,
+    height: 52,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 16,
+    marginBottom: 40,
+  },
+  btnEnviarText: {
+    color: "#050E1D",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  // ─── Modal ────────────────────────────────────────────────────────────────
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.6)",
@@ -195,11 +265,27 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 16,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   modalTitulo: {
     color: "#FFFFFF",
     fontSize: 16,
+    fontWeight: "700",
+  },
+  modalContent: {
+    backgroundColor: "#101D33",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    height: "70%",
+    paddingBottom: 30,
+    borderTopWidth: 1,
+    borderColor: "rgba(22, 199, 231, 0.15)",
+  },
+  modalTitle: {
+    color: "#FFF",
+    fontSize: 18,
     fontWeight: "700",
   },
   modalItem: {
@@ -237,37 +323,31 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 22,
   },
-  modalContent: {
-    backgroundColor: "#101D33",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: 0.7, // No máximo 70% da altura da tela
-    paddingBottom: 30,
-    borderTopWidth: 1,
-    borderColor: "rgba(22, 199, 231, 0.15)",
-  },
-  modalTitle: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  turmaItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.03)",
-  },
-  turmaItemText: {
-    color: "#FFF",
-    fontSize: 15,
-    fontWeight: "500",
-  },
   emptyText: {
     color: "#7c8db5",
     fontSize: 14,
     textAlign: "center",
     marginVertical: 40,
+  },
+
+  dateButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#0D1B2E",
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.05)",
+  },
+  dateText: {
+    color: "#E8EDF8",
+    fontSize: 15,
+  },
+  datePlaceholder: {
+    color: "#3B4E6B",
+    fontSize: 15,
   },
 });

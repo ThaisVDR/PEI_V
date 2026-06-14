@@ -5,7 +5,6 @@ import { styleScreen, COLORS } from "../../../styles/BottomTab";
 
 export default function AlunoLayout() {
   return (
-    
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -15,53 +14,18 @@ export default function AlunoLayout() {
         tabBarLabelStyle: styleScreen.tabBarLabel,
       }}
     >
-      <Tabs.Screen
-        name="Home/index"
-        options={{
-          title: "Início",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="home-outline" size={24} color={color} />
-          ),
-        }}
-      />
+      <Tabs.Screen name="Home/index" options={{ title: "Início", tabBarIcon: ({ color }) => <Ionicons name="home-outline" size={24} color={color} /> }} />
+      <Tabs.Screen name="Tasks/index" options={{ title: "Tarefas", tabBarIcon: ({ color }) => <Ionicons name="checkbox-outline" size={24} color={color} /> }} />
+      <Tabs.Screen name="Ranking/index" options={{ title: "Ranking", tabBarIcon: ({ color }) => <MaterialCommunityIcons name="chart-bar" size={24} color={color} /> }} />
+      <Tabs.Screen name="Insignias/index" options={{ title: "Insígnias", tabBarIcon: ({ color }) => <Ionicons name="ribbon-outline" size={24} color={color} /> }} />
+      <Tabs.Screen name="Perfil/index" options={{ title: "Perfil", tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={24} color={color} /> }} />
 
+      {/* Tela de detalhe — sem tab bar */}
       <Tabs.Screen
-        name="Tasks/index"
+        name="TaskDetail/index"
         options={{
-          title: "Tarefas",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="checkbox-outline" size={24} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="Ranking/index"
-        options={{
-          title: "Ranking",
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="chart-bar" size={24} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="Insignias/index"
-        options={{
-          title: "Insígnias",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="ribbon-outline" size={24} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="Perfil/index"
-        options={{
-          title: "Perfil",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="person-outline" size={24} color={color} />
-          ),
+          href: null, // esconde da tab bar
+          tabBarStyle: { display: "none" },
         }}
       />
     </Tabs>

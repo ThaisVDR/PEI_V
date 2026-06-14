@@ -12,6 +12,7 @@ import api from "../../../../services/api";
 import { styles } from "../../../../styles/Tasks";
 import TaskFilterTabs, { TaskFilter } from "../../../../components/pill/pill";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
+import { useRouter } from "expo-router";
 
 interface Tarefa {
   id: string;
@@ -19,27 +20,34 @@ interface Tarefa {
   objetivo: string;
   dataEntrega: string;
   concluida: boolean;
+  pontos?: number;
 }
 
 export default function Tasks() {
   const [filter, setFilter] = useState<TaskFilter>("todas");
   const [loading, setLoading] = useState(true);
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     carregarTarefas();
   }, []);
-
   async function carregarTarefas() {
     try {
       setLoading(true);
-
       const { data } = await api.get("/tarefas");
+      console.log("RAW tarefas:", JSON.stringify(data)); // <-- aqui
 
-      console.log("TAREFAS:");
-      console.log(JSON.stringify(data, null, 2));
+      const tarefasMapeadas: Tarefa[] = data.map((item: any) => ({
+        id: item.id,
+        titulo: item.titulo,
+        objetivo: item.descricao || item.objetivo || "",
+        dataEntrega: item.prazo || item.dataEntrega || "",
+        concluida: item.concluida,
+        pontos: item.pontos,
+      }));
 
-      setTarefas(data);
+      setTarefas(tarefasMapeadas);
     } catch (error: any) {
       console.log(error?.response?.data || error);
     } finally {
@@ -78,9 +86,8 @@ export default function Tasks() {
   }
 
   return (
-       
     <View style={styles.container}>
-    <View style={styles.header}>
+      <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image
             source={require("../../../../../assets/icon_questio.png")}
@@ -144,8 +151,14 @@ export default function Tasks() {
 
                 <View style={styles.metaRow}>
                   <Text style={styles.metaText}>
-                    Entrega: {tarefa.dataEntrega}
+                    Entrega:{" "}
+                    {tarefa.dataEntrega
+                      ? new Date(tarefa.dataEntrega).toLocaleDateString("pt-BR")
+                      : "Sem prazo"}
                   </Text>
+                  {tarefa.pontos !== undefined && (
+                    <Text style={styles.metaText}>Pontos: {tarefa.pontos}</Text>
+                  )}
                 </View>
               </View>
             </TouchableOpacity>

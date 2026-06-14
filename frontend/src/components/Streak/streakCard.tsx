@@ -68,7 +68,6 @@ export default function StreakCard({
   );
 }
 
-// styles iguais ao que você já tem — sem mudança necessária
 
 const styles = StyleSheet.create({
   card: {
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginVertical: 12,
     borderWidth: 1,
-    borderColor: "rgba(22, 199, 231, 0.1)", // Sutil borda em ciano
+    borderColor: "rgba(22, 199, 231, 0.1)",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

@@ -9,8 +9,12 @@ import {
   StatusBar,
   Alert,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
+import api from "../../../../services/api";
+import { useAuth } from "../../../../context/AuthContext";
+import { styles } from "../../../../styles/Cursos";
 
 interface Disciplina {
   id: string;
@@ -26,7 +30,8 @@ export default function CriarCursos() {
   const [semestre, setSemestre] = useState("1º Semestre");
   const [coordenador, setCoordenador] = useState("");
   const [vagas, setVagas] = useState("30");
-
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   // Estados para a inclusão de Disciplinas
   const [nomeDisciplina, setNomeDisciplina] = useState("");
   const [cargaDisciplina, setCargaDisciplina] = useState("");
@@ -58,8 +63,7 @@ export default function CriarCursos() {
     setDisciplinas(disciplinas.filter((d) => d.id !== id));
   };
 
-  // Função final de envio do formulário
-  const handleLancarCurso = () => {
+  async function handleLancarCurso() {
     if (!nomeCurso.trim() || !descricao.trim()) {
       Alert.alert(
         "Erro",
@@ -68,19 +72,48 @@ export default function CriarCursos() {
       return;
     }
 
-    const cursoCompleto = {
-      nomeCurso,
-      descricao,
-      cargaHoraria,
-      semestre,
-      coordenador,
-      vagas,
-      disciplinas,
-    };
+    if (!user?.token) {
+      Alert.alert("Erro", "Usuário não autenticado.");
+      return;
+    }
 
-    console.log("Dados salvos:", cursoCompleto);
-    Alert.alert("Sucesso", "Curso lançado com sucesso!");
-  };
+    setIsLoading(true);
+    try {
+      const payload = {
+        nome: nomeCurso,
+        descricao,
+        cargaHoraria,
+        semestre,
+        coordenador,
+        vagas: vagas ? Number(vagas) : null,
+        disciplinas: disciplinas.map((d) => ({
+          nome: d.nome,
+          cargaHoraria: d.cargaHoraria,
+        })),
+      };
+
+      await api.post("/coordenacao/cursos/criar", payload, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+
+      Alert.alert("Sucesso", "Curso lançado com sucesso!");
+
+      setNomeCurso("");
+      setDescricao("");
+      setCargaHoraria("");
+      setSemestre("1º Semestre");
+      setCoordenador("");
+      setVagas("30");
+      setDisciplinas([]);
+    } catch (error: any) {
+      console.log("Erro ao criar curso:", error?.response?.data);
+      const errorMessage =
+        error?.response?.data?.message || "Erro ao lançar curso.";
+      Alert.alert("Erro", errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -101,7 +134,7 @@ export default function CriarCursos() {
 
       <ScrollView
         style={styles.contentArea}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.headerTitle}>Lançar Novo Curso</Text>
@@ -252,192 +285,18 @@ export default function CriarCursos() {
 
         {/* --- BOTÃO PRINCIPAL DE SALVAR --- */}
         <TouchableOpacity
-          style={styles.btnLancar}
+          style={[styles.btnLancar, isLoading && { opacity: 0.6 }]}
           activeOpacity={0.8}
           onPress={handleLancarCurso}
+          disabled={isLoading}
         >
-          <Text style={styles.btnLancarText}>Lançar Curso</Text>
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={styles.btnLancarText}>Lançar Curso</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#050E1D",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.26)",
-  },
-  logoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  logo: {
-    width: 100,
-    height: 80,
-  },
-  notification: {
-    position: "relative",
-    width: 50,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  notificationBadge: {
-    position: "absolute",
-    top: -4,
-    right: 2,
-    backgroundColor: "#ff4757",
-    borderRadius: 8,
-    width: 20,
-    height: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  badgeText: {
-    color: "#fff",
-    fontSize: 11,
-    fontWeight: "bold",
-  },
-  headerTitle: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  contentArea: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  sectionTitle: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  label: {
-    color: "#7C8DB5",
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: "#101D33",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#16C7E7",
-    color: "#FFFFFF",
-    paddingHorizontal: 14,
-    height: 48,
-    marginBottom: 16,
-    fontSize: 15,
-  },
-  textArea: {
-    height: 90,
-    textAlignVertical: "top",
-    paddingTop: 12,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 16,
-  },
-  flexField: {
-    flex: 1,
-  },
-  pickerFake: {
-    backgroundColor: "#101D33",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#16C7E7",
-    height: 48,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    marginBottom: 16,
-  },
-  pickerFakeText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-  },
-  rowDisciplinas: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: 12,
-    marginBottom: 16,
-  },
-  inputInline: {
-    backgroundColor: "#101D33",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#16C7E7",
-    color: "#FFFFFF",
-    paddingHorizontal: 14,
-    height: 44,
-    fontSize: 15,
-  },
-  btnAdicionar: {
-    backgroundColor: "#00CFFF",
-    height: 44,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 16,
-  },
-  btnAdicionarText: {
-    color: "#050E1D",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  listaDisciplinasContainer: {
-    backgroundColor: "#0B1526",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#101D33",
-  },
-  itemDisciplina: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.05)",
-  },
-  itemDisciplinaNome: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  itemDisciplinaCarga: {
-    color: "#7C8DB5",
-    fontSize: 12,
-  },
-  btnLancar: {
-    backgroundColor: "#117394",
-    height: 50,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 16,
-  },
-  btnLancarText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
