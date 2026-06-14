@@ -15,10 +15,17 @@ import {
   FlatList,
   Modal,
 } from "react-native";
+<<<<<<< HEAD
 import { Feather } from "@expo/vector-icons";
 import { Button } from "../../../../components/Button/button";
 import { Input } from "../../../../components/Input/input";
 import { RadioSelect } from "../../../../components/RadioSelect/radioSelect";
+=======
+
+import { Button } from "../../../../components/button/button";
+import { Input } from "../../../../components/input/input";
+import { RadioSelect } from "../../../../components/radioSelect/radioSelect";
+>>>>>>> 5e71e3508b023ef11f36395a0c1f7bb11e482061
 import { styles } from "../../../../styles/Register";
 import { ScreenLoader } from "../../../../components/Loading/loader";
 

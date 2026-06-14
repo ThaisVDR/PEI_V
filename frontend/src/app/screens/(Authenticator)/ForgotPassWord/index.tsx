@@ -14,8 +14,8 @@ import {
   StyleSheet,
 } from "react-native";
 
-import { Button } from "../../../../components/Button/button";
-import { Input } from "../../../../components/Input/input";
+import { Button } from "../../../../components/button/button";
+import { Input } from "../../../../components/input/input";
 import { ScreenLoader } from "../../../../components/Loading/loader";
 import api from "../../../../services/api";
 
