@@ -9,188 +9,218 @@ import {
   StatusBar,
   Alert,
   Image,
+  ActivityIndicator,
+  Modal,
+  FlatList,
 } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { API_URL } from "../../../../services/api";
 import { useAuth } from "../../../../context/AuthContext";
+import { styles } from "../../../../styles/CriarEvento";
 
 interface Professor {
   idUsuario: string;
   nome: string;
 }
-
-interface Aluno {
-  idUsuario: string;
+interface Turma {
+  idTurma: string;
   nome: string;
 }
-
-interface Atribuicao {
-  id: string;
+interface Evento {
+  id?: string;
   disciplina: string;
   idProfessor: string;
   nomeProfessor: string;
-  idAluno?: string;
-  nomeAluno?: string;
   turma: string;
   semestre: string;
   tituloEvento?: string;
   descricaoEvento?: string;
   dataEvento?: string;
-  tipo: "reuniao" | "aviso" | "comunicado" | "importante"; // Alinhado com o Professor
+  tipo: "reuniao" | "aviso" | "comunicado" | "importante";
   lido: boolean;
 }
 
+const TIPOS = ["reuniao", "aviso", "comunicado", "importante"] as const;
+
+const corTipo = (tipo: string) => {
+  switch (tipo) {
+    case "importante":
+      return "#FF5A5A";
+    case "reuniao":
+      return "#00d2b4";
+    case "aviso":
+      return "#FFB547";
+    case "comunicado":
+      return "#16C7E7";
+    default:
+      return "#7C8DB5";
+  }
+};
+
 export default function CriarEvento() {
   const { user } = useAuth();
-
-  const [disciplina, setDisciplina] = useState("Banco de Dados");
-  const [turma, setTurma] = useState("2B");
-  const [dataDe, setDataDe] = useState("20 Mar 2026");
+  const headers = {
+    Authorization: `Bearer ${user?.token}`,
+    "Content-Type": "application/json",
+  };
 
   const [professores, setProfessores] = useState<Professor[]>([]);
   const [professorSelecionado, setProfessorSelecionado] =
     useState<Professor | null>(null);
-  const [carregandoProfessores, setCarregandoProfessores] = useState(true);
+  const [turmas, setTurmas] = useState<Turma[]>([]);
+  const [turmaSelecionada, setTurmaSelecionada] = useState<Turma | null>(null);
+  const [carregando, setCarregando] = useState(true);
 
-  const [alunos, setAlunos] = useState<Aluno[]>([]);
-  const [alunoSelecionado, setAlunoSelecionado] = useState<Aluno | null>(null);
-  const [carregandoAlunos, setCarregandoAlunos] = useState(true);
+  const [tituloEvento, setTituloEvento] = useState("");
+  const [descricaoEvento, setDescricaoEvento] = useState("");
+  const [disciplina, setDisciplina] = useState("");
+  const [tipoEvento, setTipoEvento] = useState<(typeof TIPOS)[number]>("aviso");
+  const [dataEvento, setDataEvento] = useState<Date>(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const [criarEvento, setCriarEvento] = useState(true);
-  const [tituloEvento, setTituloEvento] = useState(
-    "Início da Disciplina: Banco de Dados",
-  );
-  const [descricaoEvento, setDescricaoEvento] = useState(
-    "Bem-vindo ao curso de Banco de Dados. A primeira aula será sobre modelagem relacional.",
-  );
+  const [eventos, setEventos] = useState<Evento[]>([]);
+  const [enviando, setEnviando] = useState(false);
+  const [deletando, setDeletando] = useState<string | null>(null);
 
-  // Novo estado para definir o tipo do evento diretamente da coordenação
-  const [tipoEvento, setTipoEvento] = useState<
-    "reuniao" | "aviso" | "comunicado" | "importante"
-  >("reuniao");
-
-  const [atribuiu, setAtribuiu] = useState<Atribuicao[]>([]);
+  const [modalProfessor, setModalProfessor] = useState(false);
+  const [modalTurma, setModalTurma] = useState(false);
 
   useEffect(() => {
-    async function carregarDadosIniciais() {
-      const alunosFicticios: Aluno[] = [
-        { idUsuario: "a1", nome: "Arthur Passareli" },
-        { idUsuario: "a2", nome: "João Vitor" },
-        { idUsuario: "a3", nome: "Samuel Arthur" },
-        { idUsuario: "a4", nome: "Thais Vitória" },
-      ];
-
-      const profesoresFicticios: Professor[] = [
-        { idUsuario: "p1", nome: "Brendo Vale" },
-        { idUsuario: "p2", nome: "Fahim" },
-      ];
-
-      if (user && user.tipoUsuario === "Professor") {
-        setProfessorSelecionado({ idUsuario: user.idUsuario, nome: user.nome });
-        setCarregandoProfessores(false);
-      } else {
-        try {
-          const resProf = await fetch(`${API_URL}/usuarios/professores`);
-          if (resProf.ok) {
-            const dadosProf: Professor[] = await resProf.json();
-            setProfessores(
-              dadosProf.length > 0 ? dadosProf : profesoresFicticios,
-            );
-            if (dadosProf.length > 0) setProfessorSelecionado(dadosProf[0]);
-          } else {
-            setProfessores(profesoresFicticios);
-            setProfessorSelecionado(profesoresFicticios[0]);
-          }
-        } catch {
-          setProfessores(profesoresFicticios);
-          setProfessorSelecionado(profesoresFicticios[0]);
-        } finally {
-          setCarregandoProfessores(false);
-        }
-      }
-
-      try {
-        const resAluno = await fetch(`${API_URL}/usuarios/alunos`);
-        if (resAluno.ok) {
-          const dadosAluno: Aluno[] = await resAluno.json();
-          setAlunos(dadosAluno.length > 0 ? dadosAluno : alunosFicticios);
-          if (dadosAluno.length > 0) setAlunoSelecionado(dadosAluno[0]);
-        } else {
-          setAlunos(alunosFicticios);
-          setAlunoSelecionado(alunosFicticios[0]);
-        }
-      } catch {
-        setAlunos(alunosFicticios);
-        setAlunoSelecionado(alunosFicticios[0]);
-      } finally {
-        setCarregandoAlunos(false);
-      }
-    }
-
-    carregarDadosIniciais();
+    carregarDados();
   }, [user]);
 
-  const handleAtribuirEEvento = async () => {
-    if (!professorSelecionado) {
-      Alert.alert("Atenção", "Nenhum professor definido para esta atribuição.");
-      return;
-    }
-
-    if (criarEvento && (!tituloEvento.trim() || !descricaoEvento.trim())) {
-      Alert.alert("Atenção", "Preencha o título e a descrição do evento.");
-      return;
-    }
-
-    const novaAtribuicao: Atribuicao = {
-      id: Date.now().toString(),
-      disciplina,
-      idProfessor: professorSelecionado.idUsuario,
-      nomeProfessor: professorSelecionado.nome,
-      idAluno: alunoSelecionado?.idUsuario,
-      nomeAluno: alunoSelecionado?.nome,
-      turma,
-      semestre: "1º Semestre",
-      tituloEvento: criarEvento ? tituloEvento : undefined,
-      descricaoEvento: criarEvento ? descricaoEvento : undefined,
-      dataEvento: criarEvento ? dataDe : undefined,
-      tipo: tipoEvento,
-      lido: false, // Todo evento nasce como não lido para o professor
-    };
-
-    setAtribuiu([novaAtribuicao, ...atribuiu]);
-
+  async function carregarDados() {
+    if (!user?.token) return;
+    setCarregando(true);
     try {
-      // ENVIANDO DIRETAMENTE PARA O ENDPOINT QUE O PROFESSOR CONSOME
-      await fetch(`${API_URL}/eventos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(novaAtribuicao),
-      });
-    } catch (e) {
-      console.log("Modo offline: salvo localmente.", e);
+      const [resProf, resTurmas, resEventos] = await Promise.all([
+        fetch(`${API_URL}/coordenacao/professores`, { headers }),
+        fetch(`${API_URL}/coordenacao/turmas`, { headers }),
+        fetch(`${API_URL}/eventos`, { headers }),
+      ]);
+      if (resProf.ok) {
+        const profs: Professor[] = await resProf.json();
+        setProfessores(profs);
+        if (profs.length > 0) setProfessorSelecionado(profs[0]);
+      }
+      if (resTurmas.ok) {
+        const ts: Turma[] = await resTurmas.json();
+        const ativas = ts.filter((t: any) => t.ativa !== false);
+        setTurmas(ativas);
+        if (ativas.length > 0) setTurmaSelecionada(ativas[0]);
+      }
+      if (resEventos.ok) setEventos(await resEventos.json());
+    } catch (err) {
+      console.error("Erro ao carregar dados:", err);
+    } finally {
+      setCarregando(false);
     }
+  }
 
-    setTituloEvento("");
-    setDescricaoEvento("");
-    Alert.alert("Sucesso", "Evento enviado para o painel do Professor!");
-  };
+  async function handleCriarEvento() {
+    if (!tituloEvento.trim() || !descricaoEvento.trim()) {
+      Alert.alert("Atenção", "Preencha o título e a descrição.");
+      return;
+    }
+    if (!professorSelecionado || !turmaSelecionada) {
+      Alert.alert("Atenção", "Selecione professor e turma.");
+      return;
+    }
+    setEnviando(true);
+    try {
+      // 1. Cria o evento principal
+      const res = await fetch(`${API_URL}/eventos`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          disciplina: disciplina.trim() || "Geral",
+          idProfessor: professorSelecionado.idUsuario,
+          nomeProfessor: professorSelecionado.nome,
+          turma: turmaSelecionada.nome,
+          semestre: "1º Semestre",
+          tituloEvento,
+          descricaoEvento,
+          dataEvento: dataEvento.toISOString(),
+          tipo: tipoEvento,
+          lido: false,
+        }),
+      });
 
-  const handleDeletarAtribuicao = (id: string) => {
-    Alert.alert("Remover", "Deseja remover esta atribuição ativa?", [
-      { text: "Cancelar", style: "cancel" },
-      {
-        text: "Remover",
-        style: "destructive",
-        onPress: () => setAtribuiu(atribuiu.filter((item) => item.id !== id)),
-      },
-    ]);
-  };
+      if (res.ok) {
+        const salvo: Evento = await res.json();
+        setEventos([salvo, ...eventos]);
+
+        // 2. Dispara a criação automática da Notificação na API para o Aluno/Turma
+        try {
+          await fetch(`${API_URL}/api/notificacoes`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              titulo: `Novo Evento: ${tituloEvento}`,
+              mensagem: descricaoEvento,
+              idUsuario: professorSelecionado.idUsuario, // Substitua pelo ID do aluno alvo ou trate de forma global no back-end
+            }),
+          });
+        } catch (errNotif) {
+          console.log(
+            "Erro secundário ao gerar registro de notificação:",
+            errNotif,
+          );
+        }
+
+        setTituloEvento("");
+        setDescricaoEvento("");
+        setDisciplina("");
+        Alert.alert("✅ Sucesso", "Evento criado e notificação emitida!");
+      } else {
+        Alert.alert("Erro", `Falha ao salvar evento: ${res.status}`);
+      }
+    } catch {
+      Alert.alert("Erro de Rede", "Não foi possível conectar ao servidor.");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  function confirmarDelete(id: string, titulo: string) {
+    Alert.alert(
+      "Excluir Evento",
+      `Tem certeza que deseja excluir "${titulo}"?`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: () => handleDeletar(id),
+        },
+      ],
+    );
+  }
+
+  async function handleDeletar(id: string) {
+    setDeletando(id);
+    try {
+      const res = await fetch(`${API_URL}/eventos/${id}`, {
+        method: "DELETE",
+        headers,
+      });
+      if (res.ok || res.status === 204) {
+        setEventos((prev) => prev.filter((e) => e.id !== id));
+      } else {
+        Alert.alert("Erro", "Não foi possível excluir o evento.");
+      }
+    } catch {
+      Alert.alert("Erro de Rede", "Não foi possível conectar ao servidor.");
+    } finally {
+      setDeletando(null);
+    }
+  }
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#050E1D" />
 
-      {/* HEADER */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image
@@ -200,9 +230,11 @@ export default function CriarEvento() {
         </View>
         <TouchableOpacity style={styles.notification}>
           <Ionicons name="notifications" size={30} color="#5D708A" />
-          <View style={styles.notificationBadge}>
-            <Text style={styles.badgeText}>2</Text>
-          </View>
+          {eventos.length > 0 && (
+            <View style={styles.notificationBadge}>
+              <Text style={styles.badgeText}>{eventos.length}</Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -210,266 +242,284 @@ export default function CriarEvento() {
         style={styles.contentArea}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        {/* SELECTS ROW */}
-        <View style={styles.row}>
-          <View style={styles.flexField}>
-            <Text style={styles.label}>Disciplina</Text>
-            <TouchableOpacity
-              style={styles.pickerFake}
-              onPress={() => Alert.alert("Filtro", "Selecione a Disciplina")}
-            >
-              <Text style={styles.pickerFakeText}>{disciplina}</Text>
-              <Feather name="chevron-down" size={16} color="#7C8DB5" />
-            </TouchableOpacity>
-          </View>
+        <Text style={styles.pageTitle}>Criar Evento</Text>
 
-          <View style={styles.flexField}>
-            <Text style={styles.label}>Professor</Text>
-            <TouchableOpacity
-              style={[
-                styles.pickerFake,
-                user?.tipoUsuario === "Professor" && styles.disabledPicker,
-              ]}
-              disabled={
-                carregandoProfessores || user?.tipoUsuario === "Professor"
-              }
-              onPress={() => {
-                if (professores.length === 0) return;
-                Alert.alert(
-                  "Selecionar Professor",
-                  "Escolha um docente:",
-                  professores.map((prof) => ({
-                    text: prof.nome,
-                    onPress: () => setProfessorSelecionado(prof),
-                  })),
-                );
-              }}
-            >
-              <Text style={styles.pickerFakeText}>
-                {carregandoProfessores
-                  ? "Carregando..."
-                  : professorSelecionado?.nome || "Selecione"}
-              </Text>
-              {user?.tipoUsuario !== "Professor" && (
-                <Feather name="chevron-down" size={16} color="#7C8DB5" />
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Text style={styles.label}>Título do Evento *</Text>
+        <TextInput
+          style={styles.input}
+          value={tituloEvento}
+          onChangeText={setTituloEvento}
+          placeholder="Ex: Reunião de Pais e Mestres"
+          placeholderTextColor="#5D708A"
+        />
 
-        <View style={styles.row}>
-          <View style={styles.flexField}>
-            <Text style={styles.label}>Turma</Text>
-            <TouchableOpacity
-              style={styles.pickerFake}
-              onPress={() => Alert.alert("Filtro", "Selecione a Turma")}
-            >
-              <Text style={styles.pickerFakeText}>{turma}</Text>
-              <Feather name="chevron-down" size={16} color="#7C8DB5" />
-            </TouchableOpacity>
-          </View>
+        <Text style={styles.label}>Descrição *</Text>
+        <TextInput
+          style={[styles.input, styles.textArea]}
+          multiline
+          numberOfLines={4}
+          value={descricaoEvento}
+          onChangeText={setDescricaoEvento}
+          placeholder="Descreva os detalhes do evento..."
+          placeholderTextColor="#5D708A"
+        />
 
-          <View style={styles.flexField}>
-            <Text style={styles.label}>Data</Text>
-            <TouchableOpacity
-              style={styles.pickerFake}
-              onPress={() => Alert.alert("Calendário", "Selecione a Data")}
-            >
-              <Text style={styles.pickerFakeText}>{dataDe}</Text>
-              <Feather name="calendar" size={16} color="#7C8DB5" />
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Text style={styles.label}>Disciplina</Text>
+        <TextInput
+          style={styles.input}
+          value={disciplina}
+          onChangeText={setDisciplina}
+          placeholder="Ex: Banco de Dados"
+          placeholderTextColor="#5D708A"
+        />
 
-        {/* SELETOR DO TIPO DE CARD VISUAL */}
-        <Text style={styles.label}>Categoria / Tipo de Alerta</Text>
+        <Text style={styles.label}>Tipo de Evento</Text>
         <View style={styles.tipoRow}>
-          {(["reuniao", "aviso", "comunicado", "importante"] as const).map(
-            (t) => (
-              <TouchableOpacity
-                key={t}
+          {TIPOS.map((t) => (
+            <TouchableOpacity
+              key={t}
+              style={[
+                styles.tipoButton,
+                tipoEvento === t && {
+                  backgroundColor: corTipo(t),
+                  borderColor: corTipo(t),
+                },
+              ]}
+              onPress={() => setTipoEvento(t)}
+            >
+              <Text
                 style={[
-                  styles.tipoButton,
-                  tipoEvento === t && styles.tipoButtonActive,
+                  styles.tipoButtonText,
+                  tipoEvento === t && { color: "#050E1D" },
                 ]}
-                onPress={() => setTipoEvento(t)}
               >
-                <Text
-                  style={[
-                    styles.tipoButtonText,
-                    tipoEvento === t && styles.tipoButtonTextActive,
-                  ]}
-                >
-                  {t.toUpperCase()}
-                </Text>
-              </TouchableOpacity>
-            ),
-          )}
+                {t.toUpperCase()}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
-        {criarEvento && (
-          <View>
-            <Text style={styles.label}>Título do Evento</Text>
-            <TextInput
-              style={styles.input}
-              value={tituloEvento}
-              onChangeText={setTituloEvento}
-            />
+        <Text style={styles.label}>Professor Responsável *</Text>
+        <TouchableOpacity
+          style={styles.pickerFake}
+          onPress={() => setModalProfessor(true)}
+          disabled={carregando}
+        >
+          <Text style={styles.pickerFakeText}>
+            {carregando
+              ? "Carregando..."
+              : professorSelecionado?.nome || "Selecione"}
+          </Text>
+          <Feather name="chevron-down" size={16} color="#7C8DB5" />
+        </TouchableOpacity>
 
-            <Text style={styles.label}>Descrição do Evento</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              multiline
-              numberOfLines={3}
-              value={descricaoEvento}
-              onChangeText={setDescricaoEvento}
-            />
-          </View>
+        <Text style={styles.label}>Turma Alvo *</Text>
+        <TouchableOpacity
+          style={styles.pickerFake}
+          onPress={() => setModalTurma(true)}
+          disabled={carregando}
+        >
+          <Text style={styles.pickerFakeText}>
+            {carregando
+              ? "Carregando..."
+              : turmaSelecionada?.nome || "Selecione"}
+          </Text>
+          <Feather name="chevron-down" size={16} color="#7C8DB5" />
+        </TouchableOpacity>
+
+        <Text style={styles.label}>Data do Evento</Text>
+        <TouchableOpacity
+          style={styles.pickerFake}
+          onPress={() => setShowDatePicker(true)}
+        >
+          <Text style={styles.pickerFakeText}>
+            {dataEvento.toLocaleDateString("pt-BR")}
+          </Text>
+          <Feather name="calendar" size={16} color="#7C8DB5" />
+        </TouchableOpacity>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={dataEvento}
+            mode="date"
+            display="default"
+            onChange={(_, date) => {
+              setShowDatePicker(false);
+              if (date) setDataEvento(date);
+            }}
+          />
         )}
 
         <TouchableOpacity
-          style={styles.btnSubmit}
+          style={[styles.btnSubmit, enviando && { opacity: 0.6 }]}
           activeOpacity={0.8}
-          onPress={handleAtribuirEEvento}
+          disabled={enviando}
+          onPress={handleCriarEvento}
         >
-          <Text style={styles.btnSubmitText}>+ Emitir Evento para Painel</Text>
+          {enviando ? (
+            <ActivityIndicator color="#050E1D" />
+          ) : (
+            <>
+              <Feather name="send" size={18} color="#050E1D" />
+              <Text style={styles.btnSubmitText}>Emitir Evento</Text>
+            </>
+          )}
         </TouchableOpacity>
 
-        <Text style={styles.sectionTitle}>
-          Histórico de Envios Coordenador ({atribuiu.length})
-        </Text>
-        {atribuiu.map((item) => (
-          <View key={item.id} style={styles.cardAtribuicao}>
-            <View style={styles.cardHeaderRow}>
-              <View>
-                <Text style={styles.cardCursoNome}>{item.disciplina}</Text>
-                <Text style={styles.cardProfessor}>
-                  Destinatário: {item.nomeProfessor}
+        <Text style={styles.sectionTitle}>Histórico ({eventos.length})</Text>
+
+        {eventos.map((item) => (
+          <View
+            key={item.id || Math.random().toString()}
+            style={styles.cardEvento}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 6,
+              }}
+            >
+              <View
+                style={[
+                  styles.tipoBadge,
+                  {
+                    backgroundColor: corTipo(item.tipo) + "22",
+                    borderColor: corTipo(item.tipo),
+                  },
+                ]}
+              >
+                <Text
+                  style={[styles.tipoBadgeText, { color: corTipo(item.tipo) }]}
+                >
+                  {item.tipo?.toUpperCase()}
                 </Text>
               </View>
+              <Text style={styles.cardData}>
+                {item.dataEvento
+                  ? new Date(item.dataEvento).toLocaleDateString("pt-BR")
+                  : "—"}
+              </Text>
+              {/* Botão de deletar */}
               <TouchableOpacity
-                onPress={() => handleDeletarAtribuicao(item.id)}
+                style={styles.btnDelete}
+                onPress={() =>
+                  confirmarDelete(item.id!, item.tituloEvento || "este evento")
+                }
+                disabled={deletando === item.id}
               >
-                <Feather name="trash-2" size={18} color="#FF4757" />
+                {deletando === item.id ? (
+                  <ActivityIndicator size="small" color="#FF5A5A" />
+                ) : (
+                  <Feather name="trash-2" size={16} color="#FF5A5A" />
+                )}
               </TouchableOpacity>
             </View>
+            <Text style={styles.cardTitulo}>{item.tituloEvento}</Text>
+            <Text style={styles.cardDesc}>{item.descricaoEvento}</Text>
+            <Text style={styles.cardMeta}>
+              {item.disciplina} • {item.turma} • {item.nomeProfessor}
+            </Text>
           </View>
         ))}
       </ScrollView>
+
+      {/* Modal Professor */}
+      <Modal
+        visible={modalProfessor}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setModalProfessor(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Selecionar Professor</Text>
+              <TouchableOpacity onPress={() => setModalProfessor(false)}>
+                <Feather name="x" size={22} color="#FFF" />
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={professores}
+              keyExtractor={(i) => i.idUsuario}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.modalItem}
+                  onPress={() => {
+                    setProfessorSelecionado(item);
+                    setModalProfessor(false);
+                  }}
+                >
+                  <Feather name="user" size={16} color="#16C7E7" />
+                  <Text style={styles.modalItemText}>{item.nome}</Text>
+                  {professorSelecionado?.idUsuario === item.idUsuario && (
+                    <Feather
+                      name="check"
+                      size={16}
+                      color="#00d2b4"
+                      style={{ marginLeft: "auto" }}
+                    />
+                  )}
+                </TouchableOpacity>
+              )}
+              ListEmptyComponent={
+                <Text style={styles.emptyText}>
+                  Nenhum professor encontrado.
+                </Text>
+              }
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Turma */}
+      <Modal
+        visible={modalTurma}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setModalTurma(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Selecionar Turma</Text>
+              <TouchableOpacity onPress={() => setModalTurma(false)}>
+                <Feather name="x" size={22} color="#FFF" />
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={turmas}
+              keyExtractor={(i) => i.idTurma}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.modalItem}
+                  onPress={() => {
+                    setTurmaSelecionada(item);
+                    setModalTurma(false);
+                  }}
+                >
+                  <Feather name="users" size={16} color="#16C7E7" />
+                  <Text style={styles.modalItemText}>{item.nome}</Text>
+                  {turmaSelecionada?.idTurma === item.idTurma && (
+                    <Feather
+                      name="check"
+                      size={16}
+                      color="#00d2b4"
+                      style={{ marginLeft: "auto" }}
+                    />
+                  )}
+                </TouchableOpacity>
+              )}
+              ListEmptyComponent={
+                <Text style={styles.emptyText}>Nenhuma turma encontrada.</Text>
+              }
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#050E1D" },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.26)",
-  },
-  logoContainer: { flexDirection: "row", alignItems: "center", gap: 8 },
-  logo: { width: 100, height: 80 },
-  notification: {
-    position: "relative",
-    width: 50,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  notificationBadge: {
-    position: "absolute",
-    top: -4,
-    right: 2,
-    backgroundColor: "#ff4757",
-    borderRadius: 8,
-    width: 20,
-    height: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  badgeText: { color: "#fff", fontSize: 11, fontWeight: "bold" },
-  contentArea: { flex: 1 },
-  scrollContent: { padding: 20, paddingBottom: 40 },
-  label: { color: "#7C8DB5", fontSize: 14, marginBottom: 8 },
-  row: { flexDirection: "row", justifyContent: "space-between", gap: 16 },
-  flexField: { flex: 1 },
-  pickerFake: {
-    backgroundColor: "#101D33",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#16C7E7",
-    height: 48,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    marginBottom: 20,
-  },
-  disabledPicker: { borderColor: "rgba(124, 141, 181, 0.3)", opacity: 0.8 },
-  pickerFakeText: { color: "#FFFFFF", fontSize: 15 },
-  tipoRow: { flexDirection: "row", gap: 8, marginBottom: 20, flexWrap: "wrap" },
-  tipoButton: {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
-  },
-  tipoButtonActive: { backgroundColor: "#16C7E7", borderColor: "#16C7E7" },
-  tipoButtonText: { color: "#7C8DB5", fontSize: 11, fontWeight: "700" },
-  tipoButtonTextActive: { color: "#050E1D" },
-  input: {
-    backgroundColor: "#101D33",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#16C7E7",
-    color: "#FFFFFF",
-    paddingHorizontal: 14,
-    height: 48,
-    marginBottom: 20,
-    fontSize: 15,
-  },
-  textArea: { height: 80, textAlignVertical: "top", paddingTop: 12 },
-  btnSubmit: {
-    backgroundColor: "#00CFFF",
-    height: 48,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  btnSubmitText: { color: "#050E1D", fontSize: 16, fontWeight: "bold" },
-  sectionTitle: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  cardAtribuicao: {
-    backgroundColor: "#101D33",
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "rgba(22, 199, 231, 0.1)",
-  },
-  cardHeaderRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  cardCursoNome: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 4,
-  },
-  cardProfessor: { color: "#7C8DB5", fontSize: 14 },
-});

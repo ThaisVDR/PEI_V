@@ -1,12 +1,25 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const { width } = Dimensions.get("window");
 
 export const styles = StyleSheet.create({
+  // ─── Layout base ───────────────────────────────────────────────
   container: {
     flex: 1,
     backgroundColor: "#050E1D",
   },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  scroll: {
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+  },
 
- header: {
+  // ─── Header ────────────────────────────────────────────────────
+  header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -49,60 +62,21 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-pageTitle: {
-  color: "#E8EDF8",
-  fontSize: 22,
-  fontWeight: "700",
-  marginTop: 16,
-  marginBottom: 16,
-},
-
-statIconRow: {
-  flexDirection: "row",
-  alignItems: "center",
-  gap: 6,
-},
-statLabel: {
-  color: "#5D708A",
-  fontSize: 12,
-  fontWeight: "500",
-},
-
-avaliacaoHeaderRow: {
-  flexDirection: "row",
-  alignItems: "center",
-  gap: 6,
-},
-
-  backBtn: {
-    width: 36,
-    height: 36,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: {
-    color: "#E8EDF8",
-    fontSize: 18,
-    fontWeight: "700",
-  },
-
+  // ─── Tabs de turma ─────────────────────────────────────────────
   tabsContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 8,
     flexDirection: "row",
+    paddingHorizontal: 16,
+    paddingBottom: 14,
+    gap: 8,
   },
   tab: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
+    paddingHorizontal: 18,
+    paddingVertical: 7,
     borderRadius: 20,
-    backgroundColor: "#0A1929",
-    borderWidth: 1,
-    borderColor: "#1E2D47",
+    backgroundColor: "#0F1E33",
   },
   tabActive: {
     backgroundColor: "#00D2B4",
-    borderColor: "#00D2B4",
   },
   tabText: {
     color: "#5D708A",
@@ -113,110 +87,106 @@ avaliacaoHeaderRow: {
     color: "#050E1D",
   },
 
-  scroll: {
-    paddingHorizontal: 16,
-    paddingBottom: 40,
+  // ─── Título da página ──────────────────────────────────────────
+  pageTitle: {
+    color: "#FFFFFF",
+    fontSize: 22,
+    fontWeight: "600",
+    marginBottom: 16,
+    marginTop: 4,
   },
-  centered: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  sectionTitle: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 12,
+    marginTop: 4,
+  },
+  emptyText: {
+    color: "#5D708A",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 24,
   },
 
+  // ─── Cards de estatísticas ─────────────────────────────────────
   statsRow: {
     flexDirection: "row",
-    gap: 12,
-    marginTop: 8,
-    marginBottom: 16,
+    gap: 10,
+    marginBottom: 14,
   },
   statCard: {
     flex: 1,
-    backgroundColor: "#0A1929",
+    backgroundColor: "#0F1E33",
     borderRadius: 14,
     padding: 16,
-    borderWidth: 1,
-    borderColor: "#1E2D47",
-    gap: 6,
   },
-  statIcon: {
+  statIconRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    marginBottom: 6,
   },
-  statIconLabel: {
+  statLabel: {
     color: "#5D708A",
     fontSize: 12,
-    fontWeight: "500",
   },
   statValue: {
-    color: "#E8EDF8",
-    fontSize: 28,
-    fontWeight: "700",
+    color: "#FFFFFF",
+    fontSize: 26,
+    fontWeight: "600",
   },
 
+  // ─── Card genérico ─────────────────────────────────────────────
   card: {
-    backgroundColor: "#0A1929",
+    backgroundColor: "#0F1E33",
     borderRadius: 14,
     padding: 16,
-    borderWidth: 1,
-    borderColor: "#1E2D47",
-    marginBottom: 20,
-    gap: 10,
+    marginBottom: 14,
   },
   cardTitle: {
-    color: "#E8EDF8",
-    fontSize: 15,
+    color: "#FFFFFF",
+    fontSize: 14,
     fontWeight: "600",
-    marginBottom: 4,
+    marginBottom: 14,
   },
+
+  // ─── Gráfico de faixas ─────────────────────────────────────────
   faixaRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 8,
+    marginBottom: 8,
   },
   faixaLabel: {
     color: "#5D708A",
-    fontSize: 12,
-    width: 48,
+    fontSize: 11,
+    width: 44,
   },
   faixaBarBg: {
     flex: 1,
-    height: 8,
-    backgroundColor: "#162035",
-    borderRadius: 99,
+    height: 6,
+    backgroundColor: "#162030",
+    borderRadius: 4,
     overflow: "hidden",
   },
   faixaBarFill: {
     height: "100%",
-    borderRadius: 99,
-    minWidth: 4,
+    borderRadius: 4,
   },
   faixaCount: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "700",
-    width: 20,
+    width: 18,
     textAlign: "right",
   },
 
-  sectionTitle: {
-    color: "#E8EDF8",
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 12,
-  },
-  emptyText: {
-    color: "#5D708A",
-    textAlign: "center",
-    marginTop: 20,
-  },
+  // ─── Card de aluno ─────────────────────────────────────────────
   alunoCard: {
-    backgroundColor: "#0A1929",
+    backgroundColor: "#0F1E33",
     borderRadius: 14,
     padding: 14,
     marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#1E2D47",
-    gap: 10,
   },
   alunoTop: {
     flexDirection: "row",
@@ -231,37 +201,45 @@ avaliacaoHeaderRow: {
   },
   medalha: {
     fontSize: 20,
-  },
-  posicao: {
-    color: "#5D708A",
-    fontSize: 15,
-    fontWeight: "700",
-    width: 24,
+    width: 30,
     textAlign: "center",
   },
+  posicao: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#162030",
+    color: "#5D708A",
+    fontSize: 13,
+    fontWeight: "700",
+    textAlign: "center",
+    lineHeight: 30,
+  },
   alunoNome: {
-    color: "#E8EDF8",
+    color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "600",
   },
   alunoSub: {
     color: "#5D708A",
-    fontSize: 12,
+    fontSize: 11,
     marginTop: 2,
   },
   alunoRight: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 2,
+    gap: 4,
   },
   alunoNota: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "700",
   },
 
+  // ─── Tarefas pendentes ─────────────────────────────────────────
   pendentesContainer: {
+    marginTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.06)",
+    borderTopColor: "#162030",
     paddingTop: 10,
     gap: 8,
   },
@@ -272,18 +250,18 @@ avaliacaoHeaderRow: {
     gap: 8,
   },
   tarefaPendenteNome: {
-    color: "#8DA6C8",
+    color: "#8899AA",
     fontSize: 12,
     flex: 1,
   },
   btnIA: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: 4,
     backgroundColor: "#00D2B4",
+    borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 20,
   },
   btnIAText: {
     color: "#050E1D",
@@ -291,49 +269,52 @@ avaliacaoHeaderRow: {
     fontWeight: "700",
   },
 
+  // ─── Modal ─────────────────────────────────────────────────────
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(5,14,29,0.85)",
+    backgroundColor: "rgba(5, 14, 29, 0.85)",
     justifyContent: "flex-end",
   },
   modalBox: {
-    backgroundColor: "#0A1929",
+    backgroundColor: "#0F1E33",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
-    gap: 14,
-    borderWidth: 1,
-    borderColor: "#1E2D47",
+    paddingBottom: 40,
   },
   modalHeader: {
     flexDirection: "row",
+    alignItems: "flex-start",
     justifyContent: "space-between",
-    alignItems: "center",
+    marginBottom: 16,
   },
   modalTitulo: {
-    color: "#E8EDF8",
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "600",
   },
   modalTarefa: {
     color: "#5D708A",
     fontSize: 13,
-    marginTop: -8,
+    marginTop: 3,
   },
+
+  // ─── Resposta do aluno ─────────────────────────────────────────
   respostaBox: {
-    backgroundColor: "#050E1D",
+    backgroundColor: "#162030",
     borderRadius: 12,
     padding: 14,
-    borderWidth: 1,
-    borderColor: "#1E2D47",
+    marginBottom: 16,
   },
   respostaLabel: {
     color: "#5D708A",
-    fontSize: 12,
+    fontSize: 11,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
     marginBottom: 6,
   },
   respostaTexto: {
-    color: "#E8EDF8",
+    color: "#A0B4C8",
     fontSize: 13,
     lineHeight: 20,
   },
@@ -343,38 +324,38 @@ avaliacaoHeaderRow: {
     fontStyle: "italic",
   },
 
+  // ─── Avaliação IA ──────────────────────────────────────────────
   avaliacaoBox: {
-    backgroundColor: "#050E1D",
+    backgroundColor: "#162030",
     borderRadius: 12,
     padding: 14,
-    borderWidth: 1,
-    borderColor: "#2A4070",
-    gap: 8,
+    marginBottom: 16,
   },
-  avaliacaoHeader: {
+  avaliacaoHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    marginBottom: 10,
   },
   avaliacaoHeaderText: {
     color: "#F5C542",
     fontSize: 13,
-    fontWeight: "700",
+    fontWeight: "600",
   },
   avaliacaoNota: {
-    color: "#E8EDF8",
+    color: "#FFFFFF",
     fontSize: 15,
-    fontWeight: "700",
+    marginBottom: 8,
   },
   avaliacaoFeedback: {
-    color: "#8DA6C8",
+    color: "#8899AA",
     fontSize: 13,
-    lineHeight: 19,
+    lineHeight: 20,
+    marginBottom: 14,
   },
   avaliacaoBtns: {
     flexDirection: "row",
     gap: 10,
-    marginTop: 4,
   },
   btnConcordar: {
     flex: 1,
@@ -382,48 +363,30 @@ avaliacaoHeaderRow: {
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    backgroundColor: "rgba(0,210,180,0.12)",
-    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: "#00D2B4",
+    borderRadius: 10,
     paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: "rgba(0,210,180,0.3)",
   },
   btnConcordarText: {
     color: "#00D2B4",
     fontSize: 13,
     fontWeight: "600",
   },
-  btnAjustar: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    backgroundColor: "#162035",
-    borderRadius: 12,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: "#2A4070",
-  },
-  btnAjustarText: {
-    color: "#E8EDF8",
-    fontSize: 13,
-    fontWeight: "600",
-  },
 
+  // ─── Botão avaliar IA ──────────────────────────────────────────
   btnAvaliarIA: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
     backgroundColor: "#00D2B4",
-    borderRadius: 14,
+    borderRadius: 12,
     paddingVertical: 14,
-    marginTop: 4,
   },
   btnAvaliarIAText: {
     color: "#050E1D",
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "700",
   },
 });

@@ -14,8 +14,8 @@ import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Input } from "../../../../components/input/input";
-import { Button } from "../../../../components/button/button";
+import { Input } from "../../../../components/Input/input";
+import { Button } from "../../../../components/Button/button";
 import { ScreenLoader } from "../../../../components/Loading/loader";
 import { styles } from "../../../../styles/CreateTasks";
 import api from "../../../../services/api";
@@ -65,10 +65,10 @@ export default function CreateTask() {
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/pdf",
-        multiple: true,
+        multiple: false, // Alterado para single para coincidir com a estrutura de envio padrão de 1 arquivo
       });
       if (!result.canceled) {
-        setArquivos((prev) => [...prev, ...result.assets]);
+        setArquivos([...result.assets]);
       }
     } catch {
       Alert.alert("Erro", "Não foi possível carregar os documentos.");
@@ -95,17 +95,37 @@ export default function CreateTask() {
       return;
     }
 
-    const body = {
-      titulo: titulo.trim(),
-      descricao: objetivo.trim(),
-      prazo: dataEntrega.toISOString().slice(0, 19),
-      pontos: parseInt(pontos, 10) || 0,
-      idClass: turmaSelecionada.idClass,
-    };
-
     try {
       setLoading(true);
-      const res = await api.post("/tarefas/criar", body);
+
+      // 🔥 Injetando FormData para transportar arquivos binários reais para a API
+      const formData = new FormData();
+      formData.append("titulo", titulo.trim());
+      formData.append("descricao", objetivo.trim());
+      formData.append("prazo", dataEntrega.toISOString().slice(0, 19));
+      formData.append("pontos", String(parseInt(pontos, 10) || 0));
+      formData.append("idClass", turmaSelecionada.idClass);
+
+      // Se existir arquivo selecionado, empacota-o no formato aceito por requisições nativas
+      if (arquivos.length > 0) {
+        const fileToUpload = arquivos[0];
+
+        formData.append("file", {
+          uri:
+            Platform.OS === "ios"
+              ? fileToUpload.uri.replace("file://", "")
+              : fileToUpload.uri,
+          name: fileToUpload.name || "atividade.pdf",
+          type: fileToUpload.mimeType || "application/pdf",
+        } as any);
+      }
+
+      const res = await api.post("/tarefas/criar", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       if (res.status === 201 || res.status === 200) {
         Alert.alert("Sucesso", "Tarefa criada com sucesso!", [
           { text: "OK", onPress: () => router.back() },
@@ -197,9 +217,11 @@ export default function CreateTask() {
               <View style={styles.uploadIconCircle}>
                 <Feather name="upload-cloud" size={26} color="#5D708A" />
               </View>
-              <Text style={styles.uploadTitle}>Clique para adicionar PDFs</Text>
+              <Text style={styles.uploadTitle}>
+                Clique para adicionar o PDF
+              </Text>
               <Text style={styles.uploadSubtitle}>
-                Você pode adicionar múltiplos PDFs
+                O arquivo será vinculado diretamente à tarefa
               </Text>
             </TouchableOpacity>
           </View>

@@ -11,7 +11,72 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#050E1D",
   },
-
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "#051329",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    height: "85%",
+    paddingHorizontal: 20,
+    paddingTop: 10,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#FFF",
+  },
+  closeButton: {
+    backgroundColor: "#0F2B54",
+    padding: 6,
+    borderRadius: 20,
+  },
+  card: {
+    flexDirection: "row",
+    backgroundColor: "#0A1F3D",
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: "#3AC3FF",
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 14,
+  },
+  textContent: { flex: 1 },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#FFF",
+    marginBottom: 4,
+  },
+  cardBody: {
+    fontSize: 14,
+    color: "#A2B6D0",
+    marginBottom: 6,
+    lineHeight: 18,
+  },
+  cardTime: {
+    fontSize: 12,
+    color: "#5D708A",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyText: {
+    color: "#5D708A",
+    fontSize: 16,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -56,7 +121,7 @@ export const styles = StyleSheet.create({
   },
 
   content: {
-    paddingBottom: 40,
+    paddingBottom: 80,
   },
   logoutButton: {
     marginHorizontal: 20,

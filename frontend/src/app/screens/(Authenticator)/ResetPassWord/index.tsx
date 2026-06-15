@@ -15,8 +15,8 @@ import {
 } from "react-native";
 import { Linking } from "react-native";
 
-import { Button } from "../../../../components/button/button";
-import { Input } from "../../../../components/input/input";
+import { Button } from "../../../../components/Button/button";
+import { Input } from "../../../../components/Input/input";
 import { ScreenLoader } from "../../../../components/Loading/loader";
 import api from "../../../../services/api";
 
@@ -29,9 +29,7 @@ export default function ResetPassword() {
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Captura o token do deep link quando o app é aberto pelo link do email
   useEffect(() => {
-    // Verifica se o app já foi aberto com um deep link
     Linking.getInitialURL().then((url) => {
       if (url) extrairToken(url);
     });
@@ -45,7 +43,6 @@ export default function ResetPassword() {
   }, []);
 
   function extrairToken(url: string) {
-    // Extrai o token de: questio-app://reset-password?token=UUID
     try {
       const match = url.match(/token=([^&]+)/);
       if (match && match[1]) {

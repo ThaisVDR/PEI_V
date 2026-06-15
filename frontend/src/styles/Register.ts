@@ -8,12 +8,12 @@ export const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 16,
-    paddingTop: 20,
+    paddingTop: 15,
     paddingBottom: 16,
   },
   header: {
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 5,
   },
   logo: {
     width: 170,
@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
   footerLinks: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 25,
+    marginTop: 15,
   },
   linkText: {
     color: "#7a869a",

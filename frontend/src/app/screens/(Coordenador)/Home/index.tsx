@@ -146,7 +146,7 @@ export default function Home() {
           <TouchableOpacity
             style={[styles.btnAcao, { borderColor: "rgba(108, 92, 231, 0.2)" }]}
             activeOpacity={0.7}
-            onPress={() => router.push("/screens/(Coordenador)/EAD")}
+            onPress={() => router.push("")}
           >
             <Feather name="lock" size={20} color="#6c5ce7" />
             <Text style={styles.labelAcao}>Liberar EAD</Text>

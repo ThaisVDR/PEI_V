@@ -56,6 +56,7 @@ export function AulaForm({
 }: AulaFormProps) {
   return (
     <View style={styles.card}>
+      {/* SELEÇÃO DE TURMA */}
       <Text style={styles.label}>Turma *</Text>
       <ScrollView
         horizontal
@@ -63,28 +64,32 @@ export function AulaForm({
         style={styles.pickerScroll}
       >
         <View style={styles.pickerContainer}>
-          {turmas.map((turma) => (
-            <TouchableOpacity
-              key={turma.idTurma}
-              style={[
-                styles.pickerOption,
-                turmaId === turma.idTurma && styles.pickerOptionSelected,
-              ]}
-              onPress={() => onTurmaChange(turma.idTurma)}
-            >
-              <Text
+          {turmas &&
+            turmas.map((turma) => (
+              <TouchableOpacity
+                key={turma.idTurma}
                 style={[
-                  styles.pickerOptionText,
-                  turmaId === turma.idTurma && styles.pickerOptionTextSelected,
+                  styles.pickerOption,
+                  turmaId === turma.idTurma && styles.pickerOptionSelected,
                 ]}
+                onPress={() => onTurmaChange(turma.idTurma)}
               >
-                {turma.nome}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  style={[
+                    styles.pickerOptionText,
+                    turmaId === turma.idTurma &&
+                      styles.pickerOptionTextSelected,
+                  ]}
+                >
+                  {turma.nome}
+                </Text>
+              </TouchableOpacity>
+            ))}
         </View>
       </ScrollView>
 
+      {/* SELEÇÃO DE PROFESSOR (CORRIGIDA) */}
+      {/* SELEÇÃO DE PROFESSOR */}
       <Text style={styles.label}>Professor *</Text>
       <ScrollView
         horizontal
@@ -92,30 +97,38 @@ export function AulaForm({
         style={styles.pickerScroll}
       >
         <View style={styles.pickerContainer}>
-          {professores.map((professor) => (
-            <TouchableOpacity
-              key={professor.idUsuario}
-              style={[
-                styles.pickerOption,
-                professorId === professor.idUsuario &&
-                  styles.pickerOptionSelected,
-              ]}
-              onPress={() => onProfessorChange(professor.idUsuario)}
-            >
-              <Text
-                style={[
-                  styles.pickerOptionText,
-                  professorId === professor.idUsuario &&
-                    styles.pickerOptionTextSelected,
-                ]}
-              >
-                {professor.nome}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {professores &&
+            professores.map((professor: any) => {
+              // 💡 Mapeia o ID baseado no log do banco (idUsuario)
+              const currentProfId = professor.idUsuario || professor.id;
+
+              return (
+                <TouchableOpacity
+                  key={currentProfId || String(professor.nome)}
+                  style={[
+                    styles.pickerOption,
+                    professorId === currentProfId &&
+                      styles.pickerOptionSelected,
+                  ]}
+                  onPress={() => onProfessorChange(currentProfId)}
+                >
+                  <Text
+                    style={[
+                      styles.pickerOptionText,
+                      professorId === currentProfId &&
+                        styles.pickerOptionTextSelected,
+                    ]}
+                  >
+                    {/* Exibe o nome ou um fallback se o campo estiver nulo */}
+                    {professor.nome || "Professor Sem Nome"}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
         </View>
       </ScrollView>
 
+      {/* SELEÇÃO DO DIA DA SEMANA */}
       <Text style={styles.label}>Dia da Semana *</Text>
       <ScrollView
         horizontal
@@ -145,6 +158,7 @@ export function AulaForm({
         </View>
       </ScrollView>
 
+      {/* SELEÇÃO DE HORÁRIO */}
       <Text style={styles.label}>Horário *</Text>
       <ScrollView
         horizontal
@@ -174,6 +188,7 @@ export function AulaForm({
         </View>
       </ScrollView>
 
+      {/* ENTRADAS DE TEXTO */}
       <Text style={styles.label}>Disciplina *</Text>
       <TextInput
         style={styles.input}

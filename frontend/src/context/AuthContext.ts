@@ -1,12 +1,21 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { API_URL } from "../services/api";
+import api from "../services/api";
 
 export interface UsuarioLogado {
   idUsuario: string;
   nome: string;
   email: string;
   token: string;
+  id?: string;
   tipoUsuario: "Aluno" | "Professor" | "Coordenacao";
+  xpTotal?: number;
+  nivel?: number;
+  streak?: number;
+  maiorStreak?: number; // ✅ Corrigido para propriedade opcional do tipo number
+  checkinHoje?: boolean; // ✅ Transformado em opcional para não quebrar o login inicial
+  posicao?: string | number;
+  insignias?: number;
 }
 
 export interface AuthContextData {
@@ -15,6 +24,7 @@ export interface AuthContextData {
   user: UsuarioLogado | null;
   login(email: string, senha: string): Promise<UsuarioLogado>;
   logout(): Promise<void>;
+  atualizarXpLocal(pontosGanhos: number): void;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -61,6 +71,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UsuarioLogado | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const atualizarXpLocal = (pontosGanhos: number) => {
+    setUser((prevUser) => {
+      if (!prevUser) return null;
+
+      const xpAtual = Number(prevUser.xpTotal) || 0;
+      const novoXp = xpAtual + Number(pontosGanhos);
+      const novoNivel = Math.floor(novoXp / 100) + 1;
+
+      // 🔥 LOGICA DO STREAK COMPLETA E SEM ERROS DE TIPAGEM
+      const jaFezCheckinHoje = prevUser.checkinHoje === true;
+      const streakAtual = Number(prevUser.streak) || 0;
+
+      const novoStreak = jaFezCheckinHoje ? streakAtual : streakAtual + 1;
+      const maiorStreakAtual = Number(prevUser.maiorStreak) || 0;
+      const novoMaiorStreak =
+        novoStreak > maiorStreakAtual ? novoStreak : maiorStreakAtual;
+
+      return {
+        ...prevUser,
+        xpTotal: novoXp,
+        nivel: novoNivel,
+        streak: novoStreak,
+        maiorStreak: novoMaiorStreak,
+        checkinHoje: true,
+      };
+    });
+  };
+
   async function login(email: string, senha: string): Promise<UsuarioLogado> {
     const response = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
@@ -84,23 +122,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       nome: data.nome || decoded?.nome || "Usuário",
       email: email,
       token: data.token,
+      id: data.id || decoded?.id,
       tipoUsuario: (data.tipoUsuario || decoded?.tipo || "Aluno") as
         | "Aluno"
         | "Professor"
         | "Coordenacao",
+
+      xpTotal:
+        data.xpTotal !== undefined ? data.xpTotal : (decoded?.xpTotal ?? 0),
+      nivel: data.nivel !== undefined ? data.nivel : (decoded?.nivel ?? 1),
+      streak: data.streak ?? decoded?.streak ?? 0,
+      maiorStreak: data.maiorStreak ?? decoded?.maiorStreak ?? 0, // ✅ Mapeia maior streak vindo da API
+      checkinHoje: data.checkinHoje ?? decoded?.checkinHoje ?? false, // ✅ Mapeia status do banco
+      posicao: data.posicao ?? decoded?.posicao ?? "—",
+      insignias: data.insignias ?? decoded?.insignias ?? 0,
     };
+
+    api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
 
     setUser(dadosUsuario);
     return dadosUsuario;
   }
 
   async function logout() {
+    delete api.defaults.headers.common["Authorization"];
     setUser(null);
   }
 
   return React.createElement(
     AuthContext.Provider,
-    { value: { signed: !!user, loading, user, login, logout } },
+    {
+      value: { signed: !!user, loading, user, login, logout, atualizarXpLocal },
+    },
     children,
   );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 interface Badge {
   label: string;
@@ -10,74 +10,150 @@ interface Badge {
 
 interface Props {
   badges: Badge[];
+  totalDesbloqueadas?: number;
 }
 
-export function BadgeList({ badges }: Props) {
-  const desbloqueadas = badges.filter((b) => b.desbloqueada);
-
+export function BadgeList({ badges, totalDesbloqueadas = 0 }: Props) {
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Conquistas Recentes</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.titulo}>Insígnias</Text>
+        <View style={styles.contador}>
+          <Text style={styles.contadorTexto}>
+            {totalDesbloqueadas} / {badges.length}
+          </Text>
+        </View>
+      </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.iconRow}
-      >
-        {desbloqueadas.map((badge, index) => (
-          <View key={index} style={styles.iconItem}>
-            <View style={styles.iconCircle}>
-              <Text style={styles.iconEmoji}>{badge.icon}</Text>
+      <View style={styles.list}>
+        {badges.map((badge, index) => (
+          <View
+            key={index}
+            style={[styles.item, !badge.desbloqueada && styles.bloqueado]}
+          >
+            <View style={[styles.iconContainer, !badge.desbloqueada && styles.iconContainerBloqueado]}>
+              <Text style={styles.icone}>{badge.icon}</Text>
             </View>
-            <Text style={styles.iconLabel}>{badge.label}</Text>
+
+            <View style={styles.info}>
+              <Text style={[styles.nome, !badge.desbloqueada && styles.nomeBloqueado]}>
+                {badge.label}
+              </Text>
+              {badge.description && (
+                <Text style={[styles.descricao, !badge.desbloqueada && styles.descricaoBloqueada]}>
+                  {badge.description}
+                </Text>
+              )}
+            </View>
+
+            {badge.desbloqueada ? (
+              <View style={styles.checkContainer}>
+                <Text style={styles.checkIcon}>✓</Text>
+              </View>
+            ) : (
+              <Text style={styles.cadeado}>🔒</Text>
+            )}
           </View>
         ))}
-      </ScrollView>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  section: {
-    marginTop: 4,
+  container: {
+    paddingHorizontal: 16,
+    marginTop: 24,
   },
-  sectionTitle: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: "#ffffff",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 12,
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
   },
-
-  // Linha de ícones
-  iconRow: {
-    paddingHorizontal: 20,
+  titulo: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#E8EDF8",
+  },
+  contador: {
+    backgroundColor: "#162035",
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderWidth: 0.5,
+    borderColor: "#2A4070",
+  },
+  contadorTexto: {
+    fontSize: 13,
+    color: "#5B7EB5",
+  },
+  list: {
+    gap: 8,
+  },
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#162035",
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 0.5,
+    borderColor: "#2A4A7F",
     gap: 12,
-    paddingBottom: 4,
   },
-  iconItem: {
-    alignItems: "center",
-    gap: 6,
-    width: 60,
+  bloqueado: {
+    backgroundColor: "#131D30",
+    borderColor: "#1E2D47",
+    opacity: 0.6,
   },
-  iconCircle: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: "#1a2840",
-    borderWidth: 1.5,
-    borderColor: "#243550",
-    justifyContent: "center",
-    alignItems: "center",
+iconContainer: {
+  width: 44,
+  height: 44,
+  borderRadius: 22,
+  overflow: "hidden",   
+  backgroundColor: "#1C2D50",
+  alignItems: "center",
+  justifyContent: "center",
+},
+  iconContainerBloqueado: {
+    backgroundColor: "#161E2E",
   },
-  iconEmoji: {
+  icone: {
     fontSize: 22,
   },
-  iconLabel: {
-    fontSize: 10,
-    color: "#6b8aaa",
-    textAlign: "center",
-    lineHeight: 13,
+  info: {
+    flex: 1,
+    gap: 2,
+  },
+  nome: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#E8EDF8",
+  },
+  nomeBloqueado: {
+    color: "#8DA6C8",
+  },
+  descricao: {
+    fontSize: 12,
+    color: "#5B7EB5",
+  },
+  descricaoBloqueada: {
+    color: "#3D5070",
+  },
+  checkContainer: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#1E6E4A",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkIcon: {
+    fontSize: 13,
+    color: "#5DCA9A",
+    fontWeight: "600",
+  },
+  cadeado: {
+    fontSize: 16,
   },
 });

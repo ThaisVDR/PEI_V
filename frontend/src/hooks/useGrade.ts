@@ -45,8 +45,15 @@ export function useGradeHoraria() {
         ativa: t.ativa,
       }));
 
+      const professoresData = professoresResponse.data.map((p: any) => ({
+        ...p,
+        id: p.idUsuario || p.id, // Garante compatibilidade se o formulário ler .id
+        idUsuario: p.idUsuario || p.id, // Garante compatibilidade se o hook ler .idUsuario
+        nome: p.nome || "Professor sem nome",
+      }));
+
       setTurmas(turmasData);
-      setProfessores(professoresResponse.data);
+      setProfessores(professoresData);
     } catch (error: any) {
       console.log("Erro ao carregar dados:", error?.response?.data || error);
       Alert.alert("Erro", "Não foi possível carregar turmas e professores.");

@@ -1,8 +1,7 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  
-    container: {
+  container: {
     flex: 1,
     backgroundColor: "#050E1D",
   },
@@ -25,7 +24,7 @@ export const styles = StyleSheet.create({
     width: 100,
     height: 80,
   },
-    pageTitle: {
+  pageTitle: {
     color: "#FFF",
     fontSize: 28,
     fontWeight: "800",
@@ -56,94 +55,163 @@ export const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "bold",
   },
- 
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "#051329",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    height: "85%",
+    paddingHorizontal: 20,
+    paddingTop: 10,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#FFF",
+  },
+  closeButton: {
+    backgroundColor: "#0F2B54",
+    padding: 6,
+    borderRadius: 20,
+  },
+  card: {
+    flexDirection: "row",
+    backgroundColor: "#0A1F3D",
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: "#3AC3FF",
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 14,
+  },
+  textContent: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#FFF",
+    marginBottom: 4,
+  },
+  cardBody: {
+    fontSize: 14,
+    color: "#A2B6D0",
+    marginBottom: 6,
+    lineHeight: 18,
+  },
+  cardTime: {
+    fontSize: 12,
+    color: "#5D708A",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyText: {
+    color: "#5D708A",
+    fontSize: 16,
+  },
+
   screen: {
     flex: 1,
-    backgroundColor: '#0d1424',
+    backgroundColor: "#0d1424",
   },
- content: {
+  content: {
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 32,
   },
   title: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 28,
-    fontWeight: '900',
+    fontWeight: "900",
     marginBottom: 18,
   },
   progressCard: {
-    backgroundColor: '#101a35',
+    backgroundColor: "#101a35",
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: '#293259',
+    borderColor: "#293259",
     padding: 18,
     marginBottom: 18,
   },
   progressLabel: {
-    color: '#c3d0f7',
+    color: "#c3d0f7",
     fontSize: 13,
     marginBottom: 12,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   progressBarBackground: {
     height: 8,
-    backgroundColor: '#17224c',
+    backgroundColor: "#17224c",
     borderRadius: 99,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: 10,
   },
   progressBarFill: {
     height: 8,
-    backgroundColor: '#9f7dff',
+    backgroundColor: "#9f7dff",
   },
   progressText: {
-    color: '#7a89b8',
+    color: "#7a89b8",
     fontSize: 12,
   },
   tabsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginBottom: 18,
   },
   tabButton: {
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 999,
-    backgroundColor: '#101a35',
+    backgroundColor: "#101a35",
     borderWidth: 1,
-    borderColor: '#293259',
+    borderColor: "#293259",
     marginRight: 8,
     marginBottom: 8,
   },
   tabButtonActive: {
-    backgroundColor: '#0f62ff',
-    borderColor: '#0f62ff',
+    backgroundColor: "#0f62ff",
+    borderColor: "#0f62ff",
   },
   tabText: {
-    color: '#8e9cca',
+    color: "#8e9cca",
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   tabTextActive: {
-    color: '#fff',
+    color: "#fff",
   },
   badgeGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   badgeCard: {
-    width: '48%',
+    width: "48%",
     minHeight: 120,
-    backgroundColor: '#101a35',
+    backgroundColor: "#101a35",
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#293259',
+    borderColor: "#293259",
     padding: 16,
     marginBottom: 12,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   badgeCardLocked: {
     opacity: 0.45,
@@ -152,30 +220,30 @@ export const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 14,
-    backgroundColor: '#111a38',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
+    backgroundColor: "#111a38",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
     marginBottom: 16,
   },
   badgeIconWrapperLocked: {
-    backgroundColor: '#1b2548',
+    backgroundColor: "#1b2548",
   },
   badgeIcon: {
     fontSize: 22,
   },
   badgeLock: {
-    position: 'absolute',
+    position: "absolute",
     right: -6,
     top: -6,
     fontSize: 14,
   },
   badgeTitle: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   badgeTitleLocked: {
-    color: '#8e9cca',
+    color: "#8e9cca",
   },
 });

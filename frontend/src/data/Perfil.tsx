@@ -1,30 +1,24 @@
-// Retorna os 4 cards de stats com as cores corretas da tela
 export function getStats(user: any) {
   return [
     {
       label: "Pontos Totais",
-      value: user?.pontos ?? 1880,
-      color: "blue" as const, // cyan #00d4ff
+      value: user?.xpTotal ?? 0,
+      color: "blue" as const,
     },
     {
       label: "Streak Atual",
-      value: user?.streak ?? 7,
+      value: user?.streakAtual ?? 0,
       color: "white" as const,
     },
-    {
-      label: "Posição",
-      value: user?.posicao ? `#${user.posicao}` : "#3",
-      color: "pink" as const, // vermelho/rosa #e8445a
-    },
+    { label: "Posição", value: 1, color: "pink" as const },
     {
       label: "Insígnias",
-      value: user?.insignias ?? 7,
+      value: user?.insignias ?? 0,
       color: "white" as const,
     },
   ];
 }
 
-// Todas as conquistas — só as desbloqueadas aparecem nos ícones horizontais
 export const ALL_BADGES = [
   {
     label: "Primeiro Passo",
