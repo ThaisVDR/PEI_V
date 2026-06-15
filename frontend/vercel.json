@@ -3,11 +3,7 @@
   "rewrites": [
     {
       "source": "/(.*)",
-<<<<<<< HEAD
-      "destination": "/"
-=======
       "destination": "/index.html"
->>>>>>> fb544392216b718eac5b5cd2f335594ae687885c
     }
   ]
 }
