@@ -34,10 +34,7 @@
               "host": "reset-password"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -48,15 +45,13 @@
               "host": "reset-password"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "package": "com.questio.app"
     },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
