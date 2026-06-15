@@ -1,0 +1,4 @@
+ALTER TABLE submissao_tarefas
+    ADD COLUMN IF NOT EXISTS resposta TEXT,
+    ADD COLUMN IF NOT EXISTS feedback TEXT,
+    ADD COLUMN IF NOT EXISTS avaliado_por_ia BOOLEAN DEFAULT FALSE;

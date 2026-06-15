@@ -1,0 +1,22 @@
+services:
+  postgres_questio:
+    image: postgres:17
+    container_name: postgres_questio
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: questio_db
+    ports:
+      - "5433:5432"
+
+  questio_backend:
+    build: .
+    container_name: questio_backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres_questio
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_questio:5432/questio_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root

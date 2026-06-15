@@ -1,0 +1,271 @@
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#0C1123",
+  },
+  content: {
+    padding: 10,
+    paddingBottom: 100,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255, 255, 255, 0.26)",
+  },
+  logoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  logo: {
+    width: 90,
+    height: 80,
+  },
+  notification: {
+    position: "relative",
+    width: 50,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  notificationBadge: {
+    position: "absolute",
+    top: -4,
+    right: 2,
+    backgroundColor: "#ff4757",
+    borderRadius: 8,
+    width: 20,
+    height: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 11,
+    fontWeight: "bold",
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  card: {
+    backgroundColor: "#1A2236",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#2A3650",
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#9CA8C4",
+    marginBottom: 8,
+    marginTop: 12,
+  },
+  input: {
+    backgroundColor: "#0F1730",
+    borderWidth: 1,
+    borderColor: "#2A3650",
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 15,
+    color: "#FFFFFF",
+    marginBottom: 4,
+  },
+  button: {
+    backgroundColor: "#22B8E8",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 14,
+    borderRadius: 10,
+    marginTop: 16,
+    gap: 8,
+  },
+  buttonText: {
+    color: "#0C1123",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    marginTop: 20,
+    marginBottom: 12,
+  },
+  turmaCard: {
+    backgroundColor: "#1A2236",
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#2A3650",
+    borderLeftWidth: 3,
+    borderLeftColor: "#22B8E8",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  turmaNome: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#22B8E8",
+    marginBottom: 4,
+    letterSpacing: 0.5,
+  },
+  turmaInfo: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    marginBottom: 4,
+  },
+  turmaId: {
+    fontSize: 12,
+    color: "#7c8db5",
+  },
+  pickerScroll: {
+    marginBottom: 4,
+  },
+  pickerContainer: {
+    flexDirection: "row",
+    gap: 8,
+    paddingVertical: 4,
+  },
+  pickerOption: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: "#0F1730",
+    borderWidth: 1,
+    borderColor: "#2A3650",
+    marginRight: 8,
+  },
+  pickerOptionSelected: {
+    backgroundColor: "#22B8E8",
+    borderColor: "#22B8E8",
+  },
+  pickerOptionText: {
+    color: "#9CA8C4",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  pickerOptionTextSelected: {
+    color: "#0C1123",
+    fontWeight: "700",
+  },
+  aulaCardContent: {
+    flex: 1,
+  },
+  aulaHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  aulaInfo: {
+    flex: 1,
+  },
+  deleteButton: {
+    padding: 8,
+  },
+
+  // Estilos de loading
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#0C1123",
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: "#9CA8C4",
+  },
+
+  saveButton: {
+    marginTop: 20,
+    marginBottom: 60,
+    backgroundColor: "#22B8E8",
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+
+  // Estilos de texto
+  labelBold: {
+    fontWeight: "bold",
+    color: "#9CA8C4",
+  },
+
+  // Estilos de container vazio
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+  },
+  emptyText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: "#7c8db5",
+    textAlign: "center",
+  },
+
+  headerWithBack: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingTop: 8,
+    position: "relative",
+  },
+  backButton: {
+    padding: 8,
+    position: "absolute",
+    left: 0,
+    zIndex: 1,
+  },
+  selectedInfo: {
+    fontSize: 12,
+    color: "#4CAF50",
+    marginTop: -8,
+    marginBottom: 16,
+    fontStyle: "italic",
+  },
+  createTurmaButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#0F1730",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    marginBottom: 20,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "#2A3650",
+    borderStyle: "dashed",
+  },
+  createTurmaButtonText: {
+    color: "#22B8E8",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+});
