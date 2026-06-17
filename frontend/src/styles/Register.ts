@@ -1,50 +1,64 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+const { height } = Dimensions.get("window");
 
 export const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: "#020617",
+  },
+
   container: {
     flex: 1,
-    backgroundColor: "#050a12",
+    backgroundColor: "#020617",
   },
+
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 16,
-    paddingTop: 15,
-    paddingBottom: 16,
+    paddingHorizontal: 25,
+    paddingVertical: 20, // era 40
+    backgroundColor: "#020617",
   },
+
   header: {
+    marginBottom: height * 0.02, // era 0.04
     alignItems: "center",
-    marginBottom: 5,
   },
+
   logo: {
-    width: 170,
-    height: 170,
-    marginBottom: -12,
+    width: height * 0.1, // era 0.15
+    height: height * 0.1, // era 0.15
+    marginBottom: 8, // era 12
   },
+
   maskedContainer: {
-    height: 45,
+    height: 38, // era 45
     width: "100%",
-    justifyContent: "center",
   },
+
   title: {
-    fontSize: 30,
+    fontSize: height * 0.032, // era 0.04
     fontWeight: "bold",
     textAlign: "center",
+    backgroundColor: "transparent",
   },
+
   form: {
-    width: "100%",
-    gap: 6,
+    gap: 8, // era 12
   },
+
   footerLinks: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 15,
+    marginTop: 10, // era 16
+    alignItems: "center",
   },
+
   linkText: {
-    color: "#7a869a",
-    fontSize: 14,
+    color: "#7C8DB5",
+    fontSize: 13, // era 14
+    textAlign: "center",
   },
+
   linkTextAccent: {
-    color: "#007BFF",
-    fontWeight: "bold",
+    color: "#16C7E7",
+    fontWeight: "600",
   },
 });

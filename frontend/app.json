@@ -35,17 +35,6 @@
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
-        },
-        {
-          "action": "VIEW",
-          "autoVerify": true,
-          "data": [
-            {
-              "scheme": "questio-app",
-              "host": "reset-password"
-            }
-          ],
-          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "package": "com.questio.app"
@@ -57,7 +46,8 @@
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-font"
     ],
     "extra": {
       "router": {},

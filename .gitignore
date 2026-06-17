@@ -4,6 +4,25 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+
+# Expo
+.expo/
+.expo-shared/
+
+
+# Node
+node_modules/
+
+# Logs
+*.log
+
+# EAS Build
+dist/
+
+# Android e iOS (se usar Expo Managed Workflow)
+# android/
+# ios/
+
 ### STS ###
 .apt_generated
 .classpath

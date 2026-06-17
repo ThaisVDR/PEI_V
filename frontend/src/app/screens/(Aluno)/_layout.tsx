@@ -60,7 +60,6 @@ export default function AlunoLayout() {
         }}
       />
 
-      {/* Tela de detalhe — sem tab bar */}
       <Tabs.Screen
         name="TaskDetails/index"
         options={{

@@ -1,6 +1,7 @@
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 import { Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useAuth } from "../../../../context/AuthContext";
@@ -64,84 +65,92 @@ export default function Login() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <ScreenLoader visible={loading} message={loadingMessage} />
+    <SafeAreaView style={styles.wrapper} edges={["top", "bottom"]}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScreenLoader visible={loading} message={loadingMessage} />
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Image
-              source={require("../../../../../assets/icon_questio.png")}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            <MaskedView
-              style={{ height: 45, width: "100%" }}
-              maskElement={
-                <Text
-                  style={[styles.title, { backgroundColor: "transparent" }]}
-                >
-                  Questio
-                </Text>
-              }
-            >
-              <LinearGradient
-                colors={["#00d2b4", "#007BFF"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={{ flex: 1 }}
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            <View style={styles.header}>
+              <Image
+                source={require("../../../../../assets/icon_questio.png")}
+                style={styles.logo}
+                resizeMode="contain"
               />
-            </MaskedView>
-          </View>
-
-          <View style={styles.form}>
-            <Input
-              label="Email"
-              iconName="user"
-              placeholder="Digite o seu Email"
-              value={email}
-              onChangeText={setEmail}
-              editable={!loading}
-            />
-
-            <Input
-              label="Senha"
-              iconName="lock"
-              placeholder="Digite sua Senha"
-              isPassword
-              value={senha}
-              onChangeText={setSenha}
-              editable={!loading}
-            />
-
-            <Button
-              title="Entrar"
-              onPress={handleLogin}
-              disabled={!email || !senha}
-            />
-
-            <View style={styles.footerLinks}>
-              <TouchableOpacity
-                onPress={() =>
-                  router.push("/screens/(Authenticator)/ForgotPassWord")
+              <MaskedView
+                style={{ height: 45, width: "100%" }}
+                maskElement={
+                  <Text
+                    style={[styles.title, { backgroundColor: "transparent" }]}
+                  >
+                    Questio
+                  </Text>
                 }
               >
-                <Text style={styles.linkText}>Esqueci minha senha</Text>
-              </TouchableOpacity>
+                <LinearGradient
+                  colors={["#00d2b4", "#007BFF"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{ flex: 1 }}
+                />
+              </MaskedView>
+            </View>
 
-              <Text style={styles.divider}>|</Text>
-              <TouchableOpacity
-                onPress={() => router.push("/screens/(Authenticator)/Register")}
-              >
-                <Text style={styles.linkText}>Primeiro acesso</Text>
-              </TouchableOpacity>
+            <View style={styles.form}>
+              <Input
+                label="Email"
+                iconName="user"
+                placeholder="Digite o seu Email"
+                value={email}
+                onChangeText={setEmail}
+                editable={!loading}
+              />
+
+              <Input
+                label="Senha"
+                iconName="lock"
+                placeholder="Digite sua Senha"
+                isPassword
+                value={senha}
+                onChangeText={setSenha}
+                editable={!loading}
+              />
+
+              <Button
+                title="Entrar"
+                onPress={handleLogin}
+                disabled={!email || !senha}
+              />
+
+              <View style={styles.footerLinks}>
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push("/screens/(Authenticator)/ForgotPassWord")
+                  }
+                >
+                  <Text style={styles.linkText}>Esqueci minha senha</Text>
+                </TouchableOpacity>
+
+                <Text style={styles.divider}>|</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push("/screens/(Authenticator)/Register")
+                  }
+                >
+                  <Text style={styles.linkText}>Primeiro acesso</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

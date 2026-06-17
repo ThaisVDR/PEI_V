@@ -11,6 +11,8 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import { Feather, Ionicons } from "@expo/vector-icons";
 import api from "../../../../services/api";
 import { useAuth } from "../../../../context/AuthContext";
@@ -31,6 +33,8 @@ export default function CriarCursos() {
   const [coordenador, setCoordenador] = useState("");
   const [vagas, setVagas] = useState("30");
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
+
   const [isLoading, setIsLoading] = useState(false);
   // Estados para a inclusão de Disciplinas
   const [nomeDisciplina, setNomeDisciplina] = useState("");
@@ -134,7 +138,10 @@ export default function CriarCursos() {
 
       <ScrollView
         style={styles.contentArea}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: insets.bottom + 100 }, // ✅ dinâmico por dispositivo
+        ]}
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.headerTitle}>Lançar Novo Curso</Text>

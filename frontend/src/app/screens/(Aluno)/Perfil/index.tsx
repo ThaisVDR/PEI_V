@@ -215,8 +215,6 @@ export default function Perfil() {
           <Text style={styles.logoutText}>Sair da conta</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      {/* Modal de Notificações */}
       <Modal
         animationType="slide"
         transparent={true}

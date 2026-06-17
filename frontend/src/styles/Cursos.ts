@@ -59,7 +59,8 @@ export const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    paddingBottom: 60,
+    paddingBottom: 120,
+    flexGrow: 1,
   },
   sectionTitle: {
     color: "#FFFFFF",

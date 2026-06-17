@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
   TouchableOpacity,
   ScrollView,
@@ -15,7 +14,7 @@ import {
 } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { API_URL } from "../../../../services/api";
+import api, { API_URL } from "../../../../services/api"; // ✅ axios com interceptor (token automático)
 import { useAuth } from "../../../../context/AuthContext";
 import { styles } from "../../../../styles/CriarEvento";
 
@@ -60,10 +59,6 @@ const corTipo = (tipo: string) => {
 
 export default function CriarEvento() {
   const { user } = useAuth();
-  const headers = {
-    Authorization: `Bearer ${user?.token}`,
-    "Content-Type": "application/json",
-  };
 
   const [professores, setProfessores] = useState<Professor[]>([]);
   const [professorSelecionado, setProfessorSelecionado] =
@@ -90,34 +85,50 @@ export default function CriarEvento() {
     carregarDados();
   }, [user]);
 
+  // ✅ Todos os fetch trocados por api.get — token injetado automaticamente pelo interceptor
   async function carregarDados() {
-    if (!user?.token) return;
+    if (!user?.token) {
+      console.log("❌ Sem token — user:", JSON.stringify(user));
+      return;
+    }
+    console.log("✅ Token encontrado:", user.token.substring(0, 20) + "...");
     setCarregando(true);
+
     try {
-      const [resProf, resTurmas, resEventos] = await Promise.all([
-        fetch(`${API_URL}/coordenacao/professores`, { headers }),
-        fetch(`${API_URL}/coordenacao/turmas`, { headers }),
-        fetch(`${API_URL}/eventos`, { headers }),
-      ]);
-      if (resProf.ok) {
-        const profs: Professor[] = await resProf.json();
-        setProfessores(profs);
-        if (profs.length > 0) setProfessorSelecionado(profs[0]);
-      }
-      if (resTurmas.ok) {
-        const ts: Turma[] = await resTurmas.json();
-        const ativas = ts.filter((t: any) => t.ativa !== false);
-        setTurmas(ativas);
-        if (ativas.length > 0) setTurmaSelecionada(ativas[0]);
-      }
-      if (resEventos.ok) setEventos(await resEventos.json());
-    } catch (err) {
-      console.error("Erro ao carregar dados:", err);
+      // Testa turmas
+      console.log("🔍 Buscando turmas em:", `${API_URL}/coordenacao/turmas`);
+      const resTurmas = await api.get("/coordenacao/turmas");
+      console.log("✅ Turmas status:", resTurmas.status);
+      console.log("✅ Turmas data:", JSON.stringify(resTurmas.data, null, 2));
+
+      // Testa professores
+      console.log(
+        "🔍 Buscando professores em:",
+        `${API_URL}/coordenacao/professores`,
+      );
+      const resProf = await api.get("/coordenacao/professores");
+      console.log("✅ Professores status:", resProf.status);
+      console.log(
+        "✅ Professores data:",
+        JSON.stringify(resProf.data, null, 2),
+      );
+
+      // Testa eventos
+      console.log("🔍 Buscando eventos em:", `${API_URL}/eventos`);
+      const resEventos = await api.get("/eventos");
+      console.log("✅ Eventos status:", resEventos.status);
+      console.log("✅ Eventos data:", JSON.stringify(resEventos.data, null, 2));
+    } catch (err: any) {
+      console.error("❌ Erro status:", err?.response?.status);
+      console.error("❌ Erro data:", JSON.stringify(err?.response?.data));
+      console.error("❌ Erro message:", err?.message);
+      console.error("❌ URL que falhou:", err?.config?.url);
     } finally {
       setCarregando(false);
     }
   }
 
+  // ✅ POST de evento e notificação via api.post
   async function handleCriarEvento() {
     if (!tituloEvento.trim() || !descricaoEvento.trim()) {
       Alert.alert("Atenção", "Preencha o título e a descrição.");
@@ -129,55 +140,43 @@ export default function CriarEvento() {
     }
     setEnviando(true);
     try {
-      // 1. Cria o evento principal
-      const res = await fetch(`${API_URL}/eventos`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          disciplina: disciplina.trim() || "Geral",
-          idProfessor: professorSelecionado.idUsuario,
-          nomeProfessor: professorSelecionado.nome,
-          turma: turmaSelecionada.nome,
-          semestre: "1º Semestre",
-          tituloEvento,
-          descricaoEvento,
-          dataEvento: dataEvento.toISOString(),
-          tipo: tipoEvento,
-          lido: false,
-        }),
+      const res = await api.post("/eventos", {
+        disciplina: disciplina.trim() || "Geral",
+        idProfessor: professorSelecionado.idUsuario,
+        nomeProfessor: professorSelecionado.nome,
+        turma: turmaSelecionada.nome,
+        semestre: "1º Semestre",
+        tituloEvento,
+        descricaoEvento,
+        dataEvento: dataEvento.toISOString(),
+        tipo: tipoEvento,
+        lido: false,
       });
 
-      if (res.ok) {
-        const salvo: Evento = await res.json();
-        setEventos([salvo, ...eventos]);
+      const salvo: Evento = res.data;
+      setEventos([salvo, ...eventos]);
 
-        // 2. Dispara a criação automática da Notificação na API para o Aluno/Turma
-        try {
-          await fetch(`${API_URL}/api/notificacoes`, {
-            method: "POST",
-            headers,
-            body: JSON.stringify({
-              titulo: `Novo Evento: ${tituloEvento}`,
-              mensagem: descricaoEvento,
-              idUsuario: professorSelecionado.idUsuario, // Substitua pelo ID do aluno alvo ou trate de forma global no back-end
-            }),
-          });
-        } catch (errNotif) {
-          console.log(
-            "Erro secundário ao gerar registro de notificação:",
-            errNotif,
-          );
-        }
-
-        setTituloEvento("");
-        setDescricaoEvento("");
-        setDisciplina("");
-        Alert.alert("✅ Sucesso", "Evento criado e notificação emitida!");
-      } else {
-        Alert.alert("Erro", `Falha ao salvar evento: ${res.status}`);
+      // Notificação secundária — falha silenciosa não bloqueia o fluxo
+      try {
+        await api.post("/api/notificacoes", {
+          titulo: `Novo Evento: ${tituloEvento}`,
+          mensagem: descricaoEvento,
+          idUsuario: professorSelecionado.idUsuario,
+        });
+      } catch (errNotif) {
+        console.log("Erro secundário ao gerar notificação:", errNotif);
       }
-    } catch {
-      Alert.alert("Erro de Rede", "Não foi possível conectar ao servidor.");
+
+      setTituloEvento("");
+      setDescricaoEvento("");
+      setDisciplina("");
+      Alert.alert("✅ Sucesso", "Evento criado e notificação emitida!");
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Não foi possível conectar ao servidor.";
+      Alert.alert("Erro", message);
     } finally {
       setEnviando(false);
     }
@@ -198,20 +197,20 @@ export default function CriarEvento() {
     );
   }
 
+  // ✅ DELETE via api.delete
   async function handleDeletar(id: string) {
     setDeletando(id);
     try {
-      const res = await fetch(`${API_URL}/eventos/${id}`, {
-        method: "DELETE",
-        headers,
-      });
-      if (res.ok || res.status === 204) {
+      await api.delete(`/eventos/${id}`);
+      setEventos((prev) => prev.filter((e) => e.id !== id));
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 204 || status === 200) {
+        // alguns backends retornam erro mesmo em sucesso — remove mesmo assim
         setEventos((prev) => prev.filter((e) => e.id !== id));
       } else {
         Alert.alert("Erro", "Não foi possível excluir o evento.");
       }
-    } catch {
-      Alert.alert("Erro de Rede", "Não foi possível conectar ao servidor.");
     } finally {
       setDeletando(null);
     }
@@ -403,7 +402,6 @@ export default function CriarEvento() {
                   ? new Date(item.dataEvento).toLocaleDateString("pt-BR")
                   : "—"}
               </Text>
-              {/* Botão de deletar */}
               <TouchableOpacity
                 style={styles.btnDelete}
                 onPress={() =>

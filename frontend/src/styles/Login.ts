@@ -1,6 +1,12 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+const { height } = Dimensions.get("window");
 
 export const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: "#020617",
+  },
+
   container: {
     flex: 1,
     backgroundColor: "#020617",
@@ -9,12 +15,11 @@ export const styles = StyleSheet.create({
   },
 
   header: {
-    marginBottom: 40,
+    marginBottom: height * 0.05, 
     alignItems: "center",
   },
-
   title: {
-    fontSize: 36,
+    fontSize: height * 0.045, 
     fontWeight: "bold",
     textAlign: "center",
   },
@@ -43,5 +48,12 @@ export const styles = StyleSheet.create({
     width: 160,
     height: 160,
     marginBottom: 12,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    backgroundColor: "#020617",
+    paddingHorizontal: 25,
+    paddingVertical: 40,
   },
 });
