@@ -15,13 +15,15 @@ export const styles = StyleSheet.create({
   },
 
   header: {
-    marginBottom: height * 0.05, 
+    marginBottom: height * 0.05,
     alignItems: "center",
   },
   title: {
-    fontSize: height * 0.045, 
+    fontSize: 38,
     fontWeight: "bold",
     textAlign: "center",
+    width: "100%",
+    backgroundColor: "transparent",
   },
 
   form: {
@@ -45,9 +47,9 @@ export const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   logo: {
-    width: 160,
-    height: 160,
-    marginBottom: 12,
+    width: 140,
+    height: 140,
+    marginBottom: 8,
   },
   scrollContent: {
     flexGrow: 1,
