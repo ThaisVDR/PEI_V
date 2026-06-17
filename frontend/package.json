@@ -42,7 +42,6 @@
     "react-native-worklets": "0.5.1"
   },
   "devDependencies": {
-    "@expo/cli": "^56.1.16",
     "@types/react": "~19.1.0",
     "typescript": "~5.9.2"
   },
