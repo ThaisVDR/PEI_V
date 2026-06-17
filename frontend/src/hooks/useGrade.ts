@@ -39,7 +39,7 @@ export function useGradeHoraria() {
       ]);
 
       const turmasData = turmasResponse.data.map((t: any) => ({
-        idTurma: t.idTurma,
+        idTurma: t.idTurma || t.id,
         nome: t.nome,
         nomeProfessor: t.nomeProfessor,
         ativa: t.ativa,

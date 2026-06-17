@@ -21,7 +21,7 @@ import { Input } from "../../../../components/Input/input";
 import { RadioSelect } from "../../../../components/RadioSelect/radioSelect";
 import { styles } from "../../../../styles/Register";
 import { ScreenLoader } from "../../../../components/Loading/loader";
-import api, { API_URL } from "../../../../services/api"; // ✅ importa o axios com interceptor
+import api, { API_URL } from "../../../../services/api";
 
 export default function Register() {
   const router = useRouter();
@@ -39,37 +39,14 @@ export default function Register() {
   } | null>(null);
   const [showTurmaModal, setShowTurmaModal] = useState(false);
 
-  // ✅ Usa api (axios com token) e loga o shape real para debugar o campo "ativa/ativo"
   useEffect(() => {
-    console.log("=== DEBUG TURMAS ===");
-    console.log("URL base:", API_URL);
-    console.log("Endpoint completo:", `${API_URL}/coordenacao/turmas`);
-
-    // Testa SEM token (fetch puro)
     fetch(`${API_URL}/coordenacao/turmas`)
-      .then((r) => {
-        console.log("Status sem token:", r.status);
-        return r.json();
-      })
+      .then((r) => r.json())
       .then((data) => {
-        console.log("Resposta sem token:", JSON.stringify(data, null, 2));
+        const turmasAtivas = data.filter((t: any) => t.ativa);
+        setTurmas(turmasAtivas);
       })
-      .catch((err) => console.error("Erro sem token:", err.message));
-
-    // Testa COM token (axios)
-    api
-      .get("/coordenacao/turmas")
-      .then((res) => {
-        console.log("Status com token:", res.status);
-        console.log("Resposta com token:", JSON.stringify(res.data, null, 2));
-      })
-      .catch((err) => {
-        console.error("Erro com token - status:", err?.response?.status);
-        console.error(
-          "Erro com token - data:",
-          JSON.stringify(err?.response?.data),
-        );
-      });
+      .catch(() => {});
   }, []);
 
   async function handleRegister() {
@@ -89,7 +66,6 @@ export default function Register() {
 
     setTimeout(async () => {
       try {
-        // ✅ usa api.post no lugar de fetch — garante headers corretos
         const response = await api.post("/auth/register", {
           nome,
           email,
