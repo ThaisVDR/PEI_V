@@ -98,7 +98,6 @@ export default function CreateTask() {
     try {
       setLoading(true);
 
-      // 🔥 Injetando FormData para transportar arquivos binários reais para a API
       const formData = new FormData();
       formData.append("titulo", titulo.trim());
       formData.append("descricao", objetivo.trim());
@@ -106,18 +105,21 @@ export default function CreateTask() {
       formData.append("pontos", String(parseInt(pontos, 10) || 0));
       formData.append("idClass", turmaSelecionada.idClass);
 
-      // Se existir arquivo selecionado, empacota-o no formato aceito por requisições nativas
       if (arquivos.length > 0) {
         const fileToUpload = arquivos[0];
 
-        formData.append("file", {
-          uri:
-            Platform.OS === "ios"
-              ? fileToUpload.uri.replace("file://", "")
-              : fileToUpload.uri,
-          name: fileToUpload.name || "atividade.pdf",
-          type: fileToUpload.mimeType || "application/pdf",
-        } as any);
+        const fileBlob = JSON.parse(
+          JSON.stringify({
+            uri:
+              Platform.OS === "android"
+                ? fileToUpload.uri
+                : fileToUpload.uri.replace("file://", ""),
+            type: fileToUpload.mimeType || "application/pdf",
+            name: fileToUpload.name || "atividade.pdf",
+          }),
+        );
+
+        formData.append("file", fileBlob);
       }
 
       const res = await api.post("/tarefas/criar", formData, {

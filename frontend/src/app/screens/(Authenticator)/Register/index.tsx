@@ -39,14 +39,17 @@ export default function Register() {
   } | null>(null);
   const [showTurmaModal, setShowTurmaModal] = useState(false);
 
+  //  Correção no Register:
   useEffect(() => {
-    fetch(`${API_URL}/coordenacao/turmas`)
-      .then((r) => r.json())
-      .then((data) => {
-        const turmasAtivas = data.filter((t: any) => t.ativa);
+    api
+      .get("/coordenacao/turmas")
+      .then((res) => {
+        const turmasAtivas = res.data.filter(
+          (t: any) => t.ativa || t.ativa === undefined,
+        );
         setTurmas(turmasAtivas);
       })
-      .catch(() => {});
+      .catch((err) => console.log("Erro ao buscar turmas no cadastro:", err));
   }, []);
 
   async function handleRegister() {

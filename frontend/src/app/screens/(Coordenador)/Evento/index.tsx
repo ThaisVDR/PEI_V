@@ -85,44 +85,34 @@ export default function CriarEvento() {
     carregarDados();
   }, [user]);
 
-  // ✅ Todos os fetch trocados por api.get — token injetado automaticamente pelo interceptor
   async function carregarDados() {
-    if (!user?.token) {
-      console.log("❌ Sem token — user:", JSON.stringify(user));
-      return;
-    }
-    console.log("✅ Token encontrado:", user.token.substring(0, 20) + "...");
+    if (!user?.token) return;
     setCarregando(true);
 
     try {
-      // Testa turmas
-      console.log("🔍 Buscando turmas em:", `${API_URL}/coordenacao/turmas`);
-      const resTurmas = await api.get("/coordenacao/turmas");
-      console.log("✅ Turmas status:", resTurmas.status);
-      console.log("✅ Turmas data:", JSON.stringify(resTurmas.data, null, 2));
+      const [resTurmas, resProf, resEventos] = await Promise.all([
+        api.get("/coordenacao/turmas"),
+        api.get("/coordenacao/professores"),
+        api.get("/eventos"),
+      ]);
 
-      // Testa professores
-      console.log(
-        "🔍 Buscando professores em:",
-        `${API_URL}/coordenacao/professores`,
-      );
-      const resProf = await api.get("/coordenacao/professores");
-      console.log("✅ Professores status:", resProf.status);
-      console.log(
-        "✅ Professores data:",
-        JSON.stringify(resProf.data, null, 2),
-      );
+      // Mapeia os dados tratando as variações de nomes vindas do DTO do Spring
+      const turmasNormalizadas = resTurmas.data.map((t: any) => ({
+        idTurma: t.idTurma || t.idClass || t.id,
+        nome: t.nome,
+      }));
 
-      // Testa eventos
-      console.log("🔍 Buscando eventos em:", `${API_URL}/eventos`);
-      const resEventos = await api.get("/eventos");
-      console.log("✅ Eventos status:", resEventos.status);
-      console.log("✅ Eventos data:", JSON.stringify(resEventos.data, null, 2));
+      const professoresNormalizados = resProf.data.map((p: any) => ({
+        idUsuario: p.idUsuario || p.id,
+        nome: p.nome || "Professor sem nome",
+      }));
+
+      //  Agora o componente vai receber os dados!
+      setTurmas(turmasNormalizadas);
+      setProfessores(professoresNormalizados);
+      setEventos(resEventos.data);
     } catch (err: any) {
-      console.error("❌ Erro status:", err?.response?.status);
-      console.error("❌ Erro data:", JSON.stringify(err?.response?.data));
-      console.error("❌ Erro message:", err?.message);
-      console.error("❌ URL que falhou:", err?.config?.url);
+      console.error("❌ Erro ao carregar dados do coordenador:", err?.message);
     } finally {
       setCarregando(false);
     }
